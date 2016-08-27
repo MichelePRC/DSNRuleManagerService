@@ -1,10 +1,12 @@
 package it.uninsubria.rulemanagerservice.springmvc.controller;
 
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -51,7 +53,7 @@ import it.uninsubria.rulemanagerservice.springmvc.service.UserService;
  
 @Controller
 @RestController
-public class HelloWorldRestController extends HttpServlet {
+public class HelloWorldRestController  {
  
     @Autowired
     UserService userService;  //Service which will do all data retrieval/manipulation work
@@ -81,9 +83,9 @@ public class HelloWorldRestController extends HttpServlet {
     }   
 	
 	
-	private ByteArrayOutputStream loadPdf(String fileName) throws FileNotFoundException
+	private ByteArrayOutputStream loadTxt(String pathTxt) throws FileNotFoundException
 	{
-		File file = new File(fileName);
+		File file = new File(pathTxt);
 		FileInputStream fis = new FileInputStream(file);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -100,9 +102,9 @@ public class HelloWorldRestController extends HttpServlet {
 	
 	
 	
-	@ResponseStatus(value = HttpStatus.OK)
+	//@ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/createSocialUser/", method = RequestMethod.POST)
-    public void createUser(@RequestBody String email, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, FileNotFoundException, UnsupportedEncodingException {
+    public void createUser(@RequestBody String email, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
     	User newUser=new User();
     	newUser.setEmail(email);
     	newUser.setExponent("esponente");
@@ -118,14 +120,25 @@ public class HelloWorldRestController extends HttpServlet {
     	String strPublicKey=byteArrayToHexString(pub.getEncoded());
     	System.out.println("Public Key : "+ strPublicKey);
 
-    	File file = new File("D:/eclipse/workspace/RMS/src/main/resources/RMSPublicKey.txt");
+    	File dir = new File("tmp/test");
+    	dir.mkdirs();
+    	File tmp = new File(dir, "RMSPublicKey.txt");
+    	tmp.createNewFile();
     	
-    	PrintWriter writer = new PrintWriter("RMSPublicKey.txt", "UTF-8");
+    	PrintWriter writer = new PrintWriter("tmp/test/RMSPublicKey.txt", "UTF-8");
     	writer.println(strPublicKey);
     	writer.close();
-
-    	ByteArrayOutputStream ba= loadPdf("RMSPublicKey.txt");
     	
+    	
+    	
+    	/*FileWriter w=new FileWriter("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
+    	BufferedWriter b=new BufferedWriter(w);
+		b.write(strPublicKey);
+		b.flush();*/
+    	
+    	ByteArrayOutputStream ba=loadTxt("tmp/test/RMSPublicKey.txt");
+		//ByteArrayOutputStream ba=loadTxt("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
+    	   	
     	PrintWriter pw = null;
     	
     	try{
@@ -136,7 +149,7 @@ public class HelloWorldRestController extends HttpServlet {
     	//wrting json response to browser
     	pw.println("{");
     	pw.println("\"successful\": true,");
-    	pw.println("\"pdf\": \""+pdfBase64String+"\"");
+    	pw.println("\"RMSPublicKey\": \""+pdfBase64String+"\"");
     	pw.println("}");
     	return;
     	}catch(Exception ex)
