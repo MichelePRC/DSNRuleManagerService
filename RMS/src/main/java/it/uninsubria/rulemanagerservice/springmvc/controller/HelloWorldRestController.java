@@ -1,6 +1,11 @@
 package it.uninsubria.rulemanagerservice.springmvc.controller;
 
+import java.util.Base64;
 
+
+
+
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,7 +24,9 @@ import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.json.simple.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -124,32 +131,38 @@ public class HelloWorldRestController  {
     	dir.mkdirs();
     	File tmp = new File(dir, "RMSPublicKey.txt");
     	tmp.createNewFile();
+    	//File file = new File("/home/utente.tomcat/prova.txt");
     	
     	PrintWriter writer = new PrintWriter("tmp/test/RMSPublicKey.txt", "UTF-8");
+    	//PrintWriter writer = new PrintWriter("/home/utente.tomcat/prova.txt", "UTF-8");
     	writer.println(strPublicKey);
     	writer.close();
     	
     	
     	
-    	/*FileWriter w=new FileWriter("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
+    	//FileWriter w=new FileWriter("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
+    	FileWriter w=new FileWriter("tmp/test/RMSPublicKey.txt");
+
     	BufferedWriter b=new BufferedWriter(w);
 		b.write(strPublicKey);
-		b.flush();*/
+		b.flush();
     	
     	ByteArrayOutputStream ba=loadTxt("tmp/test/RMSPublicKey.txt");
-		//ByteArrayOutputStream ba=loadTxt("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
+    	//ByteArrayOutputStream ba=loadTxt("/home/utente.tomcat/prova.txt");
     	   	
     	PrintWriter pw = null;
     	
     	try{
     	pw = response.getWriter();    	
-    	//Converting byte[] to base64 string
-    	//NOTE: Always remember to encode your base 64 string in utf8 format other wise you may always get problems on browser.
-    	String pdfBase64String = org.apache.commons.codec.binary.StringUtils.newStringUtf8(org.apache.commons.codec.binary.Base64.encodeBase64(ba.toByteArray()));
+   
+    	//String txtBase64String = org.apache.commons.codec.binary.StringUtils.newStringUtf8(org.apache.commons.codec.binary.Base64.encodeBase64(ba.toByteArray()));
+    	String txtBase64String=Base64.getEncoder().encodeToString(ba.toByteArray());
+    	
     	//wrting json response to browser
+    	System.out.println("codifica Base64: "+ txtBase64String);
     	pw.println("{");
     	pw.println("\"successful\": true,");
-    	pw.println("\"RMSPublicKey\": \""+pdfBase64String+"\"");
+    	pw.println("\"txt\": \""+txtBase64String+"\"");
     	pw.println("}");
     	return;
     	}catch(Exception ex)
@@ -164,6 +177,45 @@ public class HelloWorldRestController  {
     	
    
 	}
+    
+    
+    @RequestMapping(value = "/loginRequest/", method = RequestMethod.POST)
+    public void loginRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException{
+    	
+    	StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str = null;
+        while ((str = br.readLine()) != null) {
+            sb.append(str);
+        }
+        JSONObject messaggio = new JSONObject(sb.toString());
+    	System.out.println(messaggio.getString("user_email"));
+    	System.out.println(messaggio.getDouble("nonce"));
+    	System.out.println(messaggio.getString("message"));
+    	
+    	PrintWriter pw = null;
+    	
+    	try{
+        	pw = response.getWriter();    	
+
+        	pw.println("{");
+        	pw.println("\"successful\": true,");
+        	pw.println("}");
+        	return;
+        	}catch(Exception ex)
+        	{
+        	pw.println("{");
+        	pw.println("\"successful\": false,");
+        	pw.println("\"message\": \""+ex.getMessage()+"\",");
+        	pw.println("}");
+        	return;
+        	}
+    	
+    	
+    	
+    	
+    	
+    }
 	
 	
 }

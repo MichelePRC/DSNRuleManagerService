@@ -28,11 +28,8 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Downloads/json-simple-1.1.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Michele/Desktop/File Utili per Progetto Tesi/commons-codec-1.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Michele/Desktop/java-json.jar"/>
+	<classpathentry kind="lib" path="D:/Downloads/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

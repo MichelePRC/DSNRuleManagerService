@@ -3,11 +3,8 @@
 App.controller('LoginController',['$scope','$window','LoginService',function($scope,$window,LoginService){
 
      $window.onload=function (){
-    	 
-    	var ciao="ciao";
-    	console.log(ciao);
-    	
-        LoginService.download()
+   	
+        /*LoginService.download()
          .then(
         		 function(data){
         			 var url="data:application/txt;base64,"+data.txt;
@@ -23,29 +20,26 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
         		 function(errResponse){
         			 console.error('Error while getUser...');
         			
+        		 });*/
+    	 
+    	 
+         LoginService.login()
+         .then(
+        		 function(data){
+        			 console.log(data);
+        		        			
+        		 },
+        		 function(errResponse){
+        			 console.error('Error while getUser...');
+        			
         		 });
          	
-    	/*Lockr.set('username', 'Coyote');
-    	console.log(Lockr.get('username'));
-    	 */
-     },
-     function readTextFile(file)
- 	{
- 	    var rawFile = new XMLHttpRequest();
- 	    rawFile.open("GET", file, false);
- 	    rawFile.onreadystatechange = function ()
- 	    {
- 	        if(rawFile.readyState === 4)
- 	        {
- 	            if(rawFile.status === 200 || rawFile.status == 0)
- 	            {
- 	                var allText = rawFile.responseText;
- 	                alert(allText);
- 	            }
- 	        }
- 	    }
- 	    rawFile.send(null);
- 	}
+    	 
+    	 
+    	 
+    
+     }
+
 	
 	
         
