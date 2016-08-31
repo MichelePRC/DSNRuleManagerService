@@ -1,7 +1,7 @@
 'use strict';
 
 App.factory('LoginService',['$http','$q',function($http,$q){
-	
+
 	return{
 		
 		
@@ -36,10 +36,45 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 			    				return response.data;
 			    			},
 			    			function(errResponse){
-			    				console.error('Error while inviate email RMS');
+			    				console.error('Error login');
 			    				return $q.reject(errReponse);
 			    			});
+		},
+		
+		pubKeys:function(){
+	    	return $http({
+	            url : 'http://localhost:8080/RMS/getPublicKeys/',
+	            method : "GET",	            
+	        }
+	    			).then(
+	    			function(response){
+	    				return response.data;
+	    			},
+	    			function(errResponse){
+	    				console.error('Error pubKeys');
+	    				return $q.reject(errReponse);
+	    			});
+		},
+		
+		decrypt:function(txtCrypted){
+	    	return $http({
+	    		url: 'http://localhost:8080/RMS/decryptRequest/',
+	            method: "POST",
+	            data: txtCrypted,	            
+	        }
+	    			).then(
+	    			function(response){
+	    				return response.data;
+	    			},
+	    			function(errResponse){
+	    				console.error('Error decrypt');
+	    				return $q.reject(errReponse);
+	    			});
 		}
+		
+	
+		
+		
 	
 	}}
 

@@ -17,9 +17,14 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
@@ -27,7 +32,10 @@ import java.security.spec.RSAPublicKeySpec;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,8 +70,10 @@ import it.uninsubria.rulemanagerservice.springmvc.service.UserService;
 @RestController
 public class HelloWorldRestController  {
  
+	private PrivateKey privKey;
+	
     @Autowired
-    UserService userService;  //Service which will do all data retrieval/manipulation work
+    UserService userService;  
 	
 	@Autowired
 	MessageSource messageSource;
@@ -216,6 +226,109 @@ public class HelloWorldRestController  {
     	
     	
     }
+    
+    
+    @RequestMapping(value = "/getPublicKeys/", method = RequestMethod.GET)
+    public void getPublicKeys( HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
+    
+		 //genero la coppia di chiavi asimmetriche di RMS
+		 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+		 kpg.initialize(2048);
+		 KeyPair kp = kpg.genKeyPair();
+		 PublicKey pubKey=kp.getPublic();
+		 
+		 this.privKey=kp.getPrivate();
 	
+	     //genero le specifiche della sua chiave pubblica per accedere a modulus e publicExponent   	
+	     //KeyFactory fact = KeyFactory.getInstance("RSA");
+	   	 //RSAPublicKeySpec pub = fact.getKeySpec(kp.getPublic(),RSAPublicKeySpec.class);
+	   	 	     
+	     KeyFactory fact;
+	     RSAPublicKeySpec pub = new RSAPublicKeySpec(BigInteger.ZERO, BigInteger.ZERO);
+	     try {
+	         fact = KeyFactory.getInstance("RSA");
+	         pub = fact.getKeySpec(pubKey,    RSAPublicKeySpec.class);
+	     } catch(NoSuchAlgorithmException e1) {
+	     } catch(InvalidKeySpecException e) {
+	     }
+	   	 
+	   	 
+	   	 String modulo=pub.getModulus().toString(16);
+	   	 String esponentePubblico=pub.getPublicExponent().toString(16);
+    	
+	   	 JSONObject chiave = new JSONObject();
+	   	 chiave.put("modulo", modulo);
+	   	 chiave.put("esponente_pubblico", esponentePubblico);
+	   	 System.out.println(chiave);
+   	 	 PrintWriter pw = null;
+    	
+   	 	 try{
+        	pw = response.getWriter();    	
+        	pw.println(chiave);
+        	}catch(Exception ex)
+        	{
+        	pw.println("{");
+        	pw.println("\"successful\": false,");
+        	pw.println("\"message\": \""+ex.getMessage()+"\",");
+        	pw.println("}");
+        	return;
+        	}
+	   	 
+	   	 
+	   	 
+    }
+    
+    
+
+    @RequestMapping(value = "/decryptRequest/", method = RequestMethod.POST)
+    public void decryptReq ( HttpServletRequest request,  HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
+    
+    	StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str = null;
+        while ((str = br.readLine()) != null) {
+            sb.append(str);
+        }
+        
+        System.out.println(sb.toString());
+    	
+        Cipher cipher;
+        BigInteger passwordInt = new BigInteger(sb.toString(), 16);
+        byte[] dectyptedText = new byte[1];
+        try {
+          cipher = javax.crypto.Cipher.getInstance("RSA");
+          byte[] passwordBytes = passwordInt.toByteArray();
+          cipher.init(Cipher.DECRYPT_MODE, privKey);
+          dectyptedText = cipher.doFinal(passwordBytes);
+          } catch(NoSuchAlgorithmException e) {
+          } catch(NoSuchPaddingException e) { 
+          } catch(InvalidKeyException e) {
+          } catch(IllegalBlockSizeException e) {
+          } catch(BadPaddingException e) {
+          }
+          String passwordNew = new String(dectyptedText);
+          JSONObject messaggio = new JSONObject(passwordNew.toString());
+          System.out.println(messaggio);
+    	
+          
+          
+        PrintWriter pw = null;
+      	
+      	try{
+          	pw = response.getWriter();    	
+
+          	pw.println("{");
+          	pw.println("\"successful\": true,");
+          	pw.println("}");
+          	return;
+          	}catch(Exception ex)
+          	{
+          	pw.println("{");
+          	pw.println("\"successful\": false,");
+          	pw.println("\"message\": \""+ex.getMessage()+"\",");
+          	pw.println("}");
+          	return;
+          	}
+    }
 	
 }
