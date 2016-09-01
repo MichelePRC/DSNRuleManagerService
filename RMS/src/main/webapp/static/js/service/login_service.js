@@ -43,7 +43,7 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 		
 		pubKeys:function(){
 	    	return $http({
-	            url : 'http://localhost:8080/RMS/getPublicKeys/',
+	            url : 'http://193.206.170.143/RMS/getPublicKeys/',
 	            method : "GET",	            
 	        }
 	    			).then(
@@ -58,7 +58,7 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 		
 		decrypt:function(txtCrypted){
 	    	return $http({
-	    		url: 'http://localhost:8080/RMS/decryptRequest/',
+	    		url: 'http://193.206.170.143/RMS/decryptRequest/',
 	            method: "POST",
 	            data: txtCrypted,	            
 	        }
@@ -70,9 +70,25 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 	    				console.error('Error decrypt');
 	    				return $q.reject(errReponse);
 	    			});
-		}
+		},
 		
+		
+		getMessageToDecrypt:function(){
+	    	return $http({
+	    		url: 'http://localhost:8080/RMS/encryptRequest/',
+	            method: "GET"            
+	        }
+	    			).then(
+	    			function(response){
+	    				return response.data;
+	    			},
+	    			function(errResponse){
+	    				console.error('Error encrypt');
+	    				return $q.reject(errReponse);
+	    			});
+		},
 	
+		
 		
 		
 	

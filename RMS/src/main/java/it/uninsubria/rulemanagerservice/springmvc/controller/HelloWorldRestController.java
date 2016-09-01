@@ -27,6 +27,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
 import org.json.JSONException;
@@ -85,37 +86,6 @@ public class HelloWorldRestController  {
 	@Value("${crypto.exponent.public}")
 	private BigInteger publicExponent;
   
-	
-	
-	public static String byteArrayToHexString(byte[] bytes)          
-    {         
-        StringBuffer buffer = new StringBuffer();
-        for(int i=0; i<bytes.length; i++)
-        {                        
-            if(((int)bytes[i] & 0xff) < 0x10)       
-                buffer.append("0");                               
-            buffer.append(Long.toString((int) bytes[i] & 0xff, 16));
-        }                        
-        return buffer.toString();
-    }   
-	
-	
-	private ByteArrayOutputStream loadTxt(String pathTxt) throws FileNotFoundException
-	{
-		File file = new File(pathTxt);
-		FileInputStream fis = new FileInputStream(file);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-		byte[] buf = new byte[1024];
-			try {
-				for (int readNum; (readNum = fis.read(buf)) != -1;) {
-					bos.write(buf, 0, readNum); //no doubt here is 0
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-	return bos;
-	}
 	
 	
 	
@@ -189,7 +159,7 @@ public class HelloWorldRestController  {
 	}
     
     
-    @RequestMapping(value = "/loginRequest/", method = RequestMethod.POST)
+    /*@RequestMapping(value = "/loginRequest/", method = RequestMethod.POST)
     public void loginRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException{
     	
     	StringBuilder sb = new StringBuilder();
@@ -225,7 +195,7 @@ public class HelloWorldRestController  {
     	
     	
     	
-    }
+    }*/
     
     
     @RequestMapping(value = "/getPublicKeys/", method = RequestMethod.GET)
@@ -293,21 +263,21 @@ public class HelloWorldRestController  {
         System.out.println(sb.toString());
     	
         Cipher cipher;
-        BigInteger passwordInt = new BigInteger(sb.toString(), 16);
+        BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
         byte[] dectyptedText = new byte[1];
         try {
           cipher = javax.crypto.Cipher.getInstance("RSA");
-          byte[] passwordBytes = passwordInt.toByteArray();
+          byte[] messaggioCifratoBytes = messaggioCifrato.toByteArray();
           cipher.init(Cipher.DECRYPT_MODE, privKey);
-          dectyptedText = cipher.doFinal(passwordBytes);
+          dectyptedText = cipher.doFinal(messaggioCifratoBytes);
           } catch(NoSuchAlgorithmException e) {
           } catch(NoSuchPaddingException e) { 
           } catch(InvalidKeyException e) {
           } catch(IllegalBlockSizeException e) {
           } catch(BadPaddingException e) {
           }
-          String passwordNew = new String(dectyptedText);
-          JSONObject messaggio = new JSONObject(passwordNew.toString());
+          String messaggioDecifrato = new String(dectyptedText);
+          JSONObject messaggio = new JSONObject(messaggioDecifrato);
           System.out.println(messaggio);
     	
           
@@ -315,13 +285,9 @@ public class HelloWorldRestController  {
         PrintWriter pw = null;
       	
       	try{
-          	pw = response.getWriter();    	
-
-          	pw.println("{");
-          	pw.println("\"successful\": true,");
-          	pw.println("}");
-          	return;
-          	}catch(Exception ex)
+          	pw = response.getWriter();    	 	
+        	pw.println(messaggio);
+        	}catch(Exception ex)
           	{
           	pw.println("{");
           	pw.println("\"successful\": false,");
@@ -330,5 +296,118 @@ public class HelloWorldRestController  {
           	return;
           	}
     }
+    
+    
+    
+    @RequestMapping(value = "/encryptRequest/", method = RequestMethod.GET)
+    public void encryptReq (HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
+    
+    	
+    	RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger("21871005673239196546630580968462831307780469444887567939897040269323277972115493387540984165984578291334061693954186883497564820760294114586601170284492964146139601341591907492065262191508078944716985902273080075977250863395468651386500153820020784187286356376422405683468337530184935533499369993400065440663615072138870687957222077094903187094492955893981881798107102483194997547801580022125313577909988540108152634392752342472418061358322613613405745500147071774348964100102811374966359763933478950255285021671818822221975496075767203934308154253723625295088346417846682528316030599387281961857135797862333405488417"), new BigInteger("65537"));
+    	KeyFactory factory = KeyFactory.getInstance("RSA");
+    	PublicKey pub = factory.generatePublic(spec);
+    	
+    	RSAPrivateKeySpec spec2 = new RSAPrivateKeySpec(new BigInteger("21871005673239196546630580968462831307780469444887567939897040269323277972115493387540984165984578291334061693954186883497564820760294114586601170284492964146139601341591907492065262191508078944716985902273080075977250863395468651386500153820020784187286356376422405683468337530184935533499369993400065440663615072138870687957222077094903187094492955893981881798107102483194997547801580022125313577909988540108152634392752342472418061358322613613405745500147071774348964100102811374966359763933478950255285021671818822221975496075767203934308154253723625295088346417846682528316030599387281961857135797862333405488417"), new BigInteger("12055300195921277080892978117777001055316259185301715126735137139158553083978517221287677373270471736517564805108580603009994836277902018635677261323481755906055311638672292998510238970444754013747293875729934917139969943532629042566579665785654375512787163552525794328541285456160651406261062325733310404481767461235364506711100606082332405978183913371074562925601118083106626924146272455899400281706938176681595505490176073476471203085419686996863290921094783918658451732117578867201727953770866436242646497771895231699344955343433269397332526102377825741135550383455556271315284756734869344298644794253301728984113"));
+    	KeyFactory factory2 = KeyFactory.getInstance("RSA");
+    	PrivateKey priv = factory.generatePrivate(spec2);
+    	
+    	
+    	
+    	String text="proviamo";    	
+        Cipher cipher;
+
+        byte[] encryptedText = new byte[1];
+        try {
+          cipher = javax.crypto.Cipher.getInstance("RSA");
+          byte[] messaggioDaCifrare =text.getBytes();
+          cipher.init(Cipher.ENCRYPT_MODE, pub);
+          encryptedText = cipher.doFinal(messaggioDaCifrare);
+          } catch(NoSuchAlgorithmException e) {
+          } catch(NoSuchPaddingException e) { 
+          } catch(InvalidKeyException e) {
+          } catch(IllegalBlockSizeException e) {
+          } catch(BadPaddingException e) {
+          }
+          String encrypted=new String(Base64.getEncoder().encode(encryptedText));
+          String messaggioCifrato = byteArrayToHexString(encryptedText);
+
+        byte[] ciphertextBytes = Base64.getDecoder().decode(encrypted.getBytes());
+  		byte[] decryptedText = new byte[1];
+          try {
+            cipher = javax.crypto.Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, priv);
+            decryptedText = cipher.doFinal(ciphertextBytes);
+            } catch(NoSuchAlgorithmException e) {
+            } catch(NoSuchPaddingException e) { 
+            } catch(InvalidKeyException e) {
+            } catch(IllegalBlockSizeException e) {
+            } catch(BadPaddingException e) {
+            }
+          String decryptedString = new String(decryptedText);
+          System.out.println(new String(decryptedString));
+          
+          
+        PrintWriter pw = null;
+      	
+      	try{
+          	pw = response.getWriter();    	 	
+        	pw.println(messaggioCifrato);
+        	}catch(Exception ex)
+          	{
+          	pw.println("{");
+          	pw.println("\"successful\": false,");
+          	pw.println("\"message\": \""+ex.getMessage()+"\",");
+          	pw.println("}");
+          	return;
+          	}
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	public static String byteArrayToHexString(byte[] bytes)          
+    {         
+        StringBuffer buffer = new StringBuffer();
+        for(int i=0; i<bytes.length; i++)
+        {                        
+            if(((int)bytes[i] & 0xff) < 0x10)       
+                buffer.append("0");                               
+            buffer.append(Long.toString((int) bytes[i] & 0xff, 16));
+        }                        
+        return buffer.toString();
+    }   
+	
+	
+	private ByteArrayOutputStream loadTxt(String pathTxt) throws FileNotFoundException
+	{
+		File file = new File(pathTxt);
+		FileInputStream fis = new FileInputStream(file);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+		byte[] buf = new byte[1024];
+			try {
+				for (int readNum; (readNum = fis.read(buf)) != -1;) {
+					bos.write(buf, 0, readNum); //no doubt here is 0
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+	return bos;
+	}
+    
+    
+    
 	
 }

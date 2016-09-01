@@ -49,7 +49,9 @@
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/prng4.js"></script>
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/rng.js"></script>	  
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/jsbn.js"></script>	
-	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/rsa.js"></script> 	 
+	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/jsbn2.js"></script>		  
+	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/rsa.js"></script>
+	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/rsa2.js"></script>	 
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.js"></script>
       <script src="<c:url value='/static/js/app.js' />"></script>
