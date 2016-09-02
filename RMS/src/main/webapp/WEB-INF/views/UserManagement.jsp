@@ -26,6 +26,11 @@
      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
      <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
      
+
+     
+     
+     
+     
   </head>
   <body ng-app="myApp" class="ng-cloak">
  
@@ -44,8 +49,17 @@
               
           </div>
         
-      <script src="<c:url value='/static/js/libraries/aes.js' />"></script>
-      <script src="<c:url value='/static/js/libraries/enc-base64-min.js' />"></script>       
+      <script src="<c:url value='/static/js/libraries/jsbn.js'/>"></script>
+      <script src="<c:url value='/static/js/libraries/random.js'/>"></script>
+      <script src="<c:url value='/static/js/libraries/hash.js'/>"></script> 
+   	  <script src="<c:url value='/static/js/libraries/rsa.js'/>"></script>
+   	  <script src="<c:url value='/static/js/libraries/aes.js' />"></script>
+   	  <script src="<c:url value='/static/js/libraries/api.js'/>"></script>
+   	  <script src="<c:url value='/static/js/libraries/cryptico.js' />"></script>
+   	  <script src="<c:url value='/static/js/libraries/cryptico.min.js'/>"></script>
+   	  
+   	 
+     
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/prng4.js"></script>
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/rng.js"></script>	  
 	  <script src="http://www-cs-students.stanford.edu/~tjw/jsbn/jsbn.js"></script>	

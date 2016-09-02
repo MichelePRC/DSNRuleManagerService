@@ -74,9 +74,25 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
     	 LoginService.getMessageToDecrypt()
 		 .then(
 				 function(data){
-					 console.log(data);
+					 
+					 var modulus="e2d64f24bbc841ad448d22bd0cb07bf5a36af19f8db7477326d60cd61b667e635fa489f66896cea1580aedcd80e17cfe318e024cc087a4e2db2349b0999c3761b0fa3134585b608e022ca847422687cb783c2b1e9bcb7b9d9e4a7584a3c1be03f7a0b4b4913859f0f492cf4bf624961f0a87eaed79d33ee13c1e96016c086a2129cea756693160e40f4059bae820947a5d0e1d961c69b0e6529696c1efbe1f564a6fbbdf1ad5d7b43b2b9e5bb8e9cad44f5193f81622ab1dcf9311e7d73e462ac6b2a478ca76dd63fdfe04840329219c99edfe29976dfb52ceb667c16066a3e49c0f6533d4043e6d8ef57200847d4a911761c61b0ae63a9c512e80db78d80985";
+					 var expon="3"
+					 var privat="97398a187d302bc8d85e1728b32052a3c2474bbfb3cf84f76f395de4124454423fc306a445b9df163ab1f3de55eba8a9765eac332b0518973cc23120666824ebcb517622e592405eac1dc584d6c45a87a57d721467dcfd13bedc4e586d2bd402a515cdcdb625914b4db734dd4ec30ebf5c5a9c9e51377f40d2bf0eab9d5af16a2fbcf49becbeb91b9c12a71f125edadacc1e2420a85200c6e6798050cc51f661bc58247910a2a40b3e5ec9ed613e906ff2e13d53f7508d34e7c6c90644df27693ee78fdebd3bbfced5f315eec45787bd137dad4514cecea1977c532d2dae19c9c169d9d2775a56e4106826f8b99b157eebb43b9c01119db7b9ea16668356b66b"
+					 
+					 
+					 /*var passphrase="passphrase"
+					 var bits=2048;
+					 
+					 var clientRSAKey=cryptico.generateRSAKey(passphrase,bits);*/
+
+					 
+					 /*console.log(clientRSAKey.n.toString(16));
+					 console.log(clientRSAKey.e.toString(16));
+					 console.log(clientRSAKey.d.toString(16));*/
+					 
+					 
 					 var rsa = new RSAKey();
-	    			 rsa.setPrivate(modulo, esponente_pubblico, esponente_privato);
+	    			 rsa.setPrivate(modulus, expon, privat);
 	    			 var messaggioDecifrato=rsa.decrypt(data);
 					 console.log(messaggioDecifrato);
         		        			
