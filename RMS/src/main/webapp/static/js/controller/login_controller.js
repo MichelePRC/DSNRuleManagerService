@@ -84,9 +84,11 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
         		 function(errResponse){
         			 console.error('Error while getUser...');
         })*/
-    	 var iv = "F27D5C9927726BCEFE7510B1BDD3D137";
-    	 var salt = "3FF2EC019C627B945225DEBAD71A01B6985FE84C95A70EB132882F88C0A59A55";
-    	 var plainText ="funziona";
+
+    	 var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    	 var salt= CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    	 
+    	 var plainText ="funzionaaaaaaa";
     	 var keySize = 128;
     	 var iterationCount = 1000;
     	 var passPhrase = "passphrase";
