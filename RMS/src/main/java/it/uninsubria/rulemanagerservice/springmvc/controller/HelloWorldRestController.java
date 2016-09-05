@@ -233,7 +233,6 @@ public class HelloWorldRestController  {
 	   	 JSONObject chiave = new JSONObject();
 	   	 chiave.put("modulo", modulo);
 	   	 chiave.put("esponente_pubblico", esponentePubblico);
-	   	 System.out.println(chiave);
    	 	 PrintWriter pw = null;
     	
    	 	 try{
@@ -365,8 +364,8 @@ public class HelloWorldRestController  {
     }
     
     
-    @RequestMapping(value = "/clientPubKeys/", method = RequestMethod.POST)
-    public void clientPubKeys (HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
+    @RequestMapping(value = "/clientKeys/", method = RequestMethod.POST)
+    public void clientKeys (HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
     
     	RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
     	KeyFactory factory = KeyFactory.getInstance("RSA");
@@ -381,17 +380,13 @@ public class HelloWorldRestController  {
         }
             	
         Cipher cipher;
-        
-        
-        
-        
+                       
         BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
-        System.out.println(messaggioCifrato);
         byte[] dectyptedText = new byte[1];
         try {
           cipher = javax.crypto.Cipher.getInstance("RSA");
           byte[] messaggioCifratoBytes = messaggioCifrato.toByteArray();
-          System.out.println(messaggioCifratoBytes.length);
+
           cipher.init(Cipher.DECRYPT_MODE, priv);
           dectyptedText = cipher.doFinal(messaggioCifratoBytes);
           } catch(NoSuchAlgorithmException e) {
@@ -412,11 +407,70 @@ public class HelloWorldRestController  {
         int iterationCount = messaggio.getInt("iterationCount");
         int keySize = messaggio.getInt("keySize");
         
-        String ciphertext = messaggio.getString("cipherText");
+        /*String ciphertext = messaggio.getString("cipherText");
         
         AesUtil aesUtil = new AesUtil(keySize, iterationCount);
         String plaintext = aesUtil.decrypt(salt, iv, passphrase, ciphertext);
-    	System.out.println(plaintext);
+    	System.out.println(plaintext);*/
+        
+        
+        
+    	
+    	//KMS genera la coppia di chiavi (client) le invia a RMS che le inoltra al client (messaggio cifrato
+    	//tramite chiave simmetrica e algoritmo AES)
+    	
+    	//KMS
+		 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+		 kpg.initialize(2048);
+		 KeyPair kp = kpg.genKeyPair();
+		 PublicKey clientPublicKey =kp.getPublic();
+		 
+		 PrivateKey clientPrivateKey=kp.getPrivate();
+		 
+	
+	     //genero le specifiche della chiave pubblica per accedere a modulus e publicExponent   		   	 	     
+	     KeyFactory fact;
+	     RSAPublicKeySpec clientPub = new RSAPublicKeySpec(BigInteger.ZERO, BigInteger.ZERO);
+	     try {
+	         fact = KeyFactory.getInstance("RSA");
+	         clientPub = fact.getKeySpec(clientPublicKey,    RSAPublicKeySpec.class);
+	     } catch(NoSuchAlgorithmException e1) {
+	     } catch(InvalidKeySpecException e) {
+	     }
+	     
+	   //genero le specifiche della chiave privata per accedere a privateExponent
+	     RSAPrivateKeySpec clientPriv = new RSAPrivateKeySpec(BigInteger.ZERO, BigInteger.ZERO);
+	     try {
+	         fact = KeyFactory.getInstance("RSA");
+	         clientPriv = fact.getKeySpec(clientPrivateKey,    RSAPrivateKeySpec.class);
+	     } catch(NoSuchAlgorithmException e1) {
+	     } catch(InvalidKeySpecException e) {
+	     }
+	     
+	     String clientModulus= clientPub.getModulus().toString(16);
+	   	 String clientPublicExponent=clientPub.getPublicExponent().toString(16);
+	   	 String clientPrivateExponent=clientPriv.getPrivateExponent().toString(16);
+	   	 
+	   	JSONObject jsonmsg = new JSONObject();
+	   	jsonmsg.put("client_modulus", clientModulus);
+	   	jsonmsg.put("client_public_exponent", clientPublicExponent);
+	   	jsonmsg.put("client_private_exponent", clientPrivateExponent);
+	   	
+	   	AesUtil aesUtil = new AesUtil(keySize, iterationCount);
+        String encrypted_client_keys = aesUtil.encrypt(salt, iv, passphrase, jsonmsg.toString());
+	    
+        PrintWriter pw = null;
+        try{
+          	pw = response.getWriter();    	 	
+        	pw.println(encrypted_client_keys);
+        	}catch(Exception ex)
+          	{
+          	pw.println("{");
+          	pw.println("\"successful\": false,");
+          	pw.println("\"message\": \""+ex.getMessage()+"\",");
+          	pw.println("}");
+          	return;
+          	} 
     	
     	
     }

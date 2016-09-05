@@ -88,9 +88,9 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 	    			});
 		},
 	
-		clientPubKeys:function(dataToSend){
+		clientKeys:function(dataToSend){
 	    	return $http({
-	    		url: 'http://localhost:8080/RMS/clientPubKeys/',
+	    		url: 'http://localhost:8080/RMS/clientKeys/',
 	            method: "POST",
 	            data: dataToSend
 	        }

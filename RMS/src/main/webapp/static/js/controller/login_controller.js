@@ -115,13 +115,19 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
     				var rsa = new RSAKey();
     				rsa.setPublic(modulo, esponente_pubblico);
     				var messaggioCifrato=rsa.encrypt(jsontoStringMessaggio);
-					console.log(messaggioCifrato);
-    	     	           	 
-    	 
-					LoginService.clientPubKeys(messaggioCifrato)
+    	     	             	 
+					LoginService.clientKeys(messaggioCifrato)
 						.then(
 								function(data){
-									console.log="ok";     			
+									var decrypt = aesUtil.decrypt(salt, iv, passPhrase, data);
+									var jsondecrypt=JSON.parse(decrypt);
+									console.log(jsondecrypt);
+									
+									
+									
+									
+									
+									
 								},
 								function(errResponse){
 									console.error('Error clientpubkeys');
