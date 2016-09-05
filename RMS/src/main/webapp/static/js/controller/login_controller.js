@@ -85,7 +85,7 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
         			 console.error('Error while getUser...');
         })*/
 
-    	 var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    	 /*var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     	 var salt= CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     	 
     	 var plainText ="funzionaaaaaaa";
@@ -138,7 +138,7 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 				 function(errResponse){
 					console.error('Error clientpubkeys');
 				 }
-			 );
+			 );*/
 
 	
 	

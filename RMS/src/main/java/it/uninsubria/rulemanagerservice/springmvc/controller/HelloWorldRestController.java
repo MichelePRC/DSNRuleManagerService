@@ -93,68 +93,42 @@ public class HelloWorldRestController  {
 	
 	
     @RequestMapping(value = "/createSocialUser/", method = RequestMethod.POST)
-    public void createUser(@RequestBody String email, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public void createUser(@RequestBody Integer idu, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, JSONException {
     	User newUser=new User();
-    	newUser.setEmail(email);
+    	newUser.setEmail(idu.toString());							//modificare idu nella tabella user
     	newUser.setExponent("esponente");
     	newUser.setModulus("modulo");
     	newUser.setSecret("segreto");
     	
     	userService.saveUser(newUser);
-    	System.out.println(email);
-    	KeyFactory factory = KeyFactory.getInstance("RSA");
-    	RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, publicExponent);    	
-    	PublicKey pub = factory.generatePublic(spec);
     	
-    	String strPublicKey=byteArrayToHexString(pub.getEncoded());
-    	System.out.println("Public Key : "+ strPublicKey);
-
-    	File dir = new File("tmp/test");
-    	dir.mkdirs();
-    	File tmp = new File(dir, "RMSPublicKey.txt");
-    	tmp.createNewFile();
-    	//File file = new File("/home/utente.tomcat/prova.txt");
+    	/*String modulo=modulus.toString(16);
+	   	String esponentePubblico=publicExponent.toString(16);
+	    	   	
     	
-    	PrintWriter writer = new PrintWriter("tmp/test/RMSPublicKey.txt", "UTF-8");
-    	//PrintWriter writer = new PrintWriter("/home/utente.tomcat/prova.txt", "UTF-8");
-    	writer.println(strPublicKey);
-    	writer.close();
+	   	JSONObject keys = new JSONObject();
+	   	keys.put("modulus_RMS", modulo);
+	   	keys.put("exponent_RMS", esponentePubblico);
+	   	keys.put("modulus_KMS", modulo);					   	//KMS modulus e public exponent
+	   	keys.put("exponent_KMS", esponentePubblico);			//KMS modulus e public exponent
+    	*/
     	
-    	
-    	
-    	//FileWriter w=new FileWriter("C:/Users/Michele/git/DSNRuleManagerService/RMS/src/main/resources/RMSPublicKey.txt");
-    	FileWriter w=new FileWriter("tmp/test/RMSPublicKey.txt");
-
-    	BufferedWriter b=new BufferedWriter(w);
-		b.write(strPublicKey);
-		b.flush();
-    	
-    	ByteArrayOutputStream ba=loadTxt("tmp/test/RMSPublicKey.txt");
-    	//ByteArrayOutputStream ba=loadTxt("/home/utente.tomcat/prova.txt");
     	   	
     	PrintWriter pw = null;
     	
     	try{
-    	pw = response.getWriter();    	
-   
-    	//String txtBase64String = org.apache.commons.codec.binary.StringUtils.newStringUtf8(org.apache.commons.codec.binary.Base64.encodeBase64(ba.toByteArray()));
-    	String txtBase64String=Base64.getEncoder().encodeToString(ba.toByteArray());
-    	
-    	//wrting json response to browser
-    	System.out.println("codifica Base64: "+ txtBase64String);
-    	pw.println("{");
-    	pw.println("\"successful\": true,");
-    	pw.println("\"txt\": \""+txtBase64String+"\"");
-    	pw.println("}");
-    	return;
-    	}catch(Exception ex)
-    	{
-    	pw.println("{");
-    	pw.println("\"successful\": false,");
-    	pw.println("\"message\": \""+ex.getMessage()+"\",");
-    	pw.println("}");
-    	return;
-    	}
+    		pw.println("{");
+        	pw.println("\"successful\": true,");
+        	pw.println("}");
+        	return;
+        	}catch(Exception ex)
+        	{
+        	pw.println("{");
+        	pw.println("\"successful\": false,");
+        	pw.println("\"message\": \""+ex.getMessage()+"\",");
+        	pw.println("}");
+        	return;
+        	}
     	
     	
    
@@ -381,12 +355,21 @@ public class HelloWorldRestController  {
             	
         Cipher cipher;
                        
-        BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
         byte[] dectyptedText = new byte[1];
         try {
           cipher = javax.crypto.Cipher.getInstance("RSA");
-          byte[] messaggioCifratoBytes = messaggioCifrato.toByteArray();
+          
+          byte[] messaggioCifratoBytes = new byte[256];
 
+          BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
+          if (messaggioCifrato.toByteArray().length > 256) {
+              for (int i=1; i<257; i++) {
+            	  messaggioCifratoBytes[i-1] = messaggioCifrato.toByteArray()[i];
+              }
+          } else {
+        	  messaggioCifratoBytes = messaggioCifrato.toByteArray();
+          }
+         
           cipher.init(Cipher.DECRYPT_MODE, priv);
           dectyptedText = cipher.doFinal(messaggioCifratoBytes);
           } catch(NoSuchAlgorithmException e) {
@@ -396,7 +379,6 @@ public class HelloWorldRestController  {
           } catch(BadPaddingException e) {
           }
           String messaggioDecifrato = new String(dectyptedText);
-          System.out.println(messaggioDecifrato);
           JSONObject messaggio = new JSONObject(messaggioDecifrato);
           System.out.println(messaggio);
     	
