@@ -85,6 +85,9 @@ public class HelloWorldRestController  {
 	
 	@Value("${crypto.exponent.public}")
 	private BigInteger publicExponent;
+	
+	@Value("${crypto.exponent.private}")
+	private BigInteger privateExponent;
   
 	
 	
@@ -201,7 +204,7 @@ public class HelloWorldRestController  {
     public void getPublicKeys( HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
     
 		 //genero la coppia di chiavi asimmetriche di RMS
-		 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+		 /*KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 		 kpg.initialize(2048);
 		 KeyPair kp = kpg.genKeyPair();
 		 PublicKey pubKey=kp.getPublic();
@@ -219,11 +222,13 @@ public class HelloWorldRestController  {
 	         pub = fact.getKeySpec(pubKey,    RSAPublicKeySpec.class);
 	     } catch(NoSuchAlgorithmException e1) {
 	     } catch(InvalidKeySpecException e) {
-	     }
+	     }*/
 	   	 
+    	 
 	   	 
-	   	 String modulo=pub.getModulus().toString(16);
-	   	 String esponentePubblico=pub.getPublicExponent().toString(16);
+	   	 String modulo=modulus.toString(16);
+	   	 String esponentePubblico=publicExponent.toString(16);
+	     
     	
 	   	 JSONObject chiave = new JSONObject();
 	   	 chiave.put("modulo", modulo);
@@ -258,9 +263,7 @@ public class HelloWorldRestController  {
         while ((str = br.readLine()) != null) {
             sb.append(str);
         }
-        
-        System.out.println(sb.toString());
-    	
+            	
         Cipher cipher;
         BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
         byte[] dectyptedText = new byte[1];
@@ -302,17 +305,17 @@ public class HelloWorldRestController  {
     public void encryptReq (HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
     
     	
-    	RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger("28635536705033851965763623976468658784768396084495616942930828137000741224233792755873148732667120420878566403708741853052969706379986497583240992872284572036486095447017003541902594327787306191267469476787690198822719335304482660609167607387922531723654492936023166184148984218920758296119081763087878578889367563504426181839382162424543295974186501012450396497408257754275466689308091378265909380366095664550760205039516267803738826629447870278776199795801725408894761458701893258825205307188260404385967469957029313478081957370431674473293581006031260199283259713094295739600236422843110090332957477541346010466693"), new BigInteger("3"));
+    	RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger("21871005673239196546630580968462831307780469444887567939897040269323277972115493387540984165984578291334061693954186883497564820760294114586601170284492964146139601341591907492065262191508078944716985902273080075977250863395468651386500153820020784187286356376422405683468337530184935533499369993400065440663615072138870687957222077094903187094492955893981881798107102483194997547801580022125313577909988540108152634392752342472418061358322613613405745500147071774348964100102811374966359763933478950255285021671818822221975496075767203934308154253723625295088346417846682528316030599387281961857135797862333405488417"), new BigInteger("65537"));
     	KeyFactory factory = KeyFactory.getInstance("RSA");
     	PublicKey pub = factory.generatePublic(spec);
     	
-    	RSAPrivateKeySpec spec2 = new RSAPrivateKeySpec(new BigInteger("28635536705033851965763623976468658784768396084495616942930828137000741224233792755873148732667120420878566403708741853052969706379986497583240992872284572036486095447017003541902594327787306191267469476787690198822719335304482660609167607387922531723654492936023166184148984218920758296119081763087878578889367563504426181839382162424543295974186501012450396497408257754275466689308091378265909380366095664550760205039516267803738826629447870278776199795801725408894761458701893258825205307188260404385967469957029313478081957370431674473293581006031260199283259713094295739600236422843110090332957477541346010466693"), new BigInteger("19090357803355901310509082650979105856512264056330411295287218758000494149489195170582099155111413613919044269139161235368646470919990998388827328581523048024324063631344669027935062885191537460844979651191793465881812890202988440406111738258615021149102995290682110789432656145947172197412721175391919052592685967395417976001425427402814838018196585346014861647589906892428288736642951057006326712419935594589823379348476712811610584824427575954373140024497067140763080697590123218261605294727192273430204506741495765672866472346589603582129854958404546900712108479962110429754278479449059923854008260170802559104619"));
+    	RSAPrivateKeySpec spec2 = new RSAPrivateKeySpec(new BigInteger("21871005673239196546630580968462831307780469444887567939897040269323277972115493387540984165984578291334061693954186883497564820760294114586601170284492964146139601341591907492065262191508078944716985902273080075977250863395468651386500153820020784187286356376422405683468337530184935533499369993400065440663615072138870687957222077094903187094492955893981881798107102483194997547801580022125313577909988540108152634392752342472418061358322613613405745500147071774348964100102811374966359763933478950255285021671818822221975496075767203934308154253723625295088346417846682528316030599387281961857135797862333405488417"), new BigInteger("12055300195921277080892978117777001055316259185301715126735137139158553083978517221287677373270471736517564805108580603009994836277902018635677261323481755906055311638672292998510238970444754013747293875729934917139969943532629042566579665785654375512787163552525794328541285456160651406261062325733310404481767461235364506711100606082332405978183913371074562925601118083106626924146272455899400281706938176681595505490176073476471203085419686996863290921094783918658451732117578867201727953770866436242646497771895231699344955343433269397332526102377825741135550383455556271315284756734869344298644794253301728984113"));
     	KeyFactory factory2 = KeyFactory.getInstance("RSA");
     	PrivateKey priv = factory.generatePrivate(spec2);
     	
     	
     	
-    	String text="proviamo";    	
+    	String text="funzionaaaaa";    	
         Cipher cipher;
 
         byte[] encryptedText = new byte[1];
@@ -329,7 +332,6 @@ public class HelloWorldRestController  {
           }
           String encrypted=new String(Base64.getEncoder().encode(encryptedText));
           String messaggioCifrato = byteArrayToHexString(encryptedText);
-          System.out.println(messaggioCifrato);
 
         byte[] ciphertextBytes = Base64.getDecoder().decode(encrypted.getBytes());
   		byte[] decryptedText = new byte[1];
@@ -363,6 +365,61 @@ public class HelloWorldRestController  {
     }
     
     
+    @RequestMapping(value = "/clientPubKeys/", method = RequestMethod.POST)
+    public void clientPubKeys (HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
+    
+    	RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
+    	KeyFactory factory = KeyFactory.getInstance("RSA");
+    	PrivateKey priv = factory.generatePrivate(spec);
+    	
+    	
+    	StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str = null;
+        while ((str = br.readLine()) != null) {
+            sb.append(str);
+        }
+            	
+        Cipher cipher;
+        
+        
+        
+        
+        BigInteger messaggioCifrato = new BigInteger(sb.toString(), 16);
+        System.out.println(messaggioCifrato);
+        byte[] dectyptedText = new byte[1];
+        try {
+          cipher = javax.crypto.Cipher.getInstance("RSA");
+          byte[] messaggioCifratoBytes = messaggioCifrato.toByteArray();
+          System.out.println(messaggioCifratoBytes.length);
+          cipher.init(Cipher.DECRYPT_MODE, priv);
+          dectyptedText = cipher.doFinal(messaggioCifratoBytes);
+          } catch(NoSuchAlgorithmException e) {
+          } catch(NoSuchPaddingException e) { 
+          } catch(InvalidKeyException e) {
+          } catch(IllegalBlockSizeException e) {
+          } catch(BadPaddingException e) {
+          }
+          String messaggioDecifrato = new String(dectyptedText);
+          System.out.println(messaggioDecifrato);
+          JSONObject messaggio = new JSONObject(messaggioDecifrato);
+          System.out.println(messaggio);
+    	
+        
+        String iv =messaggio.getString("iv");
+        String salt = messaggio.getString("salt");
+        String passphrase = messaggio.getString("passPhrase");
+        int iterationCount = messaggio.getInt("iterationCount");
+        int keySize = messaggio.getInt("keySize");
+        
+        String ciphertext = messaggio.getString("cipherText");
+        
+        AesUtil aesUtil = new AesUtil(keySize, iterationCount);
+        String plaintext = aesUtil.decrypt(salt, iv, passphrase, ciphertext);
+    	System.out.println(plaintext);
+    	
+    	
+    }
     
     
     

@@ -351,7 +351,7 @@ var cryptico = (function() {
 
     return my;
 
-});
+}());
 
 
 
