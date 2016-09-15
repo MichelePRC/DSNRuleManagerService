@@ -18,9 +18,9 @@ import it.uninsubria.rulemanagerservice.springmvc.model.User;
 public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
 
 
-	public User findByEmail(String email) {
+	public User findByIdu(Integer idu) {
 		Criteria crit = createEntityCriteria();
-		crit.add(Restrictions.eq("email", email));
+		crit.add(Restrictions.eq("idu", idu));
 		User user = (User)crit.uniqueResult();
 		return user;
 	}
@@ -38,9 +38,9 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
 		persist(user);
 	}
 
-	public void deleteByEmail(String email) {
+	public void deleteByIdu(Integer idu) {
 		Criteria crit = createEntityCriteria();
-		crit.add(Restrictions.eq("email", email));
+		crit.add(Restrictions.eq("idu", idu));
 		User user = (User)crit.uniqueResult();
 		delete(user);
 	}

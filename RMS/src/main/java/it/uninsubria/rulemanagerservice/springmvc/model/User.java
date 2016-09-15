@@ -16,18 +16,13 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 @Table(name="USER")
 public class User {
-	
-	
+		
 	
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
-	private int id;
+	@Column(name="idu", unique=true, nullable=false)
+	private Integer idu;
 	
-	
-	@NotEmpty
-	@Column(name="email", unique=true,nullable=false)
-	private String email;
 		
 	@NotEmpty
 	@Column(name="modulus", nullable=false)
@@ -41,14 +36,14 @@ public class User {
 	@Column(name="secret", nullable=false)
 	private String secret;
 	
-	public User (){};
+	public User (){}
 
-	public String getEmail() {
-		return email;
+	public Integer getIdu() {
+		return idu;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setIdu(Integer idu) {
+		this.idu = idu;
 	}
 
 	public String getModulus() {
@@ -74,13 +69,12 @@ public class User {
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((idu == null) ? 0 : idu.hashCode());
 		return result;
 	}
 
@@ -90,16 +84,24 @@ public class User {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof User))
+		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null)
+		if (idu == null) {
+			if (other.idu != null)
 				return false;
-		} else if (!email.equals(other.email))
+		} else if (!idu.equals(other.idu))
 			return false;
-		
 		return true;
-	}		
+	}
+
+	@Override
+	public String toString() {
+		return "User [idu=" + idu + ", modulus=" + modulus + ", exponent=" + exponent + ", secret=" + secret + "]";
+	};
+
 	
+	
+	
+
 }

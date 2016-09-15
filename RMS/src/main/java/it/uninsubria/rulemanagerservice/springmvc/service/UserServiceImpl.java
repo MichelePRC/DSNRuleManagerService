@@ -18,8 +18,8 @@ public class UserServiceImpl implements UserService{
 	private UserDao dao;
 	
 
-	public User findByEmail(String email) {
-		User user = dao.findByEmail(email);
+	public User findByIdu(Integer idu) {
+		User user = dao.findByIdu(idu);
 		return user;
 	}
 
@@ -27,17 +27,17 @@ public class UserServiceImpl implements UserService{
 		dao.save(user);
 	}
 	
-	public void deleteByEmail(String email) {
-		dao.deleteByEmail(email);
+	public void deleteByIdu(Integer idu) {
+		dao.deleteByIdu(idu);
 	}
 
 	public List<User> findAllUsers() {
 		return dao.findAllUsers();
 	}
 
-	public boolean isUserSSOUnique(String email) {
-		User user = findByEmail(email);
-		return ( user == null || ((email != null) && (user.getEmail() == email)));
+	public boolean isUserSSOUnique(Integer idu) {
+		User user = findByIdu(idu);
+		return ( user == null || ((idu != null) && (user.getIdu() == idu)));
 	}
 		
 	

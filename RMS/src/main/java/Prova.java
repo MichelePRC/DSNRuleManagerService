@@ -4,11 +4,16 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+import it.uninsubria.rulemanagerservice.springmvc.controller.AesUtil;
 
 
 public class Prova {
@@ -60,13 +65,25 @@ public class Prova {
 	     } catch(NoSuchAlgorithmException e1) {
 	     } catch(InvalidKeySpecException e) {
 	     }
-	   	 
-	   	 
-	   	 
-	   	 
-	   	 String modulo=pub.getModulus().toString(16);
-	   	 String esponentePubblico=pub.getPublicExponent().toString(16);
-	   	 String esponentePrivato=priv.getPrivateExponent().toString(16);
+	     
+	    long startTime=System.currentTimeMillis();
+	    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
+	    System.out.println(RandomStringUtils.random(16, characters));
+	    System.out.println(System.currentTimeMillis()-startTime);
+	    
+	   	System.out.println(new AesUtil(128,1000).random(128/8).toString());
+	   	System.out.println((new AesUtil(128,1000).random(128/8).toString())+(new AesUtil(128,1000).random(128/8).toString()));
+	   	
+	   	
+	   	
+	   	System.out.println(new BigInteger("27701431034589290942710237821670823600667305194681692455378258194254477239215276883490405513613304705976726208518191834964150696991250015111363135534235399795666637994903092631992960105961294842548776803871491504398600681567398122466835316987911120821507455503398822754022577023215034756040935277968972497272013824819087474996092620532981730441727620753412199075849054973447369818359865205794899802226650559089074204175190782533879120687141844383059328984404033657568663603111506732376285259162459296905282739562506379282105946514347904080775963983303774699981164841342205673439426828252081178014347820701686826010029").toString(16));
+	   	System.out.println(new BigInteger("65537").toString(16));
+	   	System.out.println(new BigInteger("7122222758637556683776607218749002512645438340637907103973688917301492919736597883437040647334851828672472597365328477335641534466065928477447378332115697797533955631385585407465727417877654120526525308531587223234454147800641749905643759879858742173770551371473673854544462255537686125994320146387188711400091900491064759745180155819133930741602262011904953481276831593344645370165930786731455153586333817783846259040006853558693579397180528811817699355153030892171769114549395182939513039092518124569342010681144274482765556089404779985654501265853302724601133797968123144907819856877350532552434289374722672822273").toString(16));
+	   	
+	   	
+	   	String modulo=pub.getModulus().toString(16);
+	   	String esponentePubblico=pub.getPublicExponent().toString(16);
+	   	String esponentePrivato=priv.getPrivateExponent().toString(16);
 
 	   	System.out.println("modulo: "+ pub.getModulus());
 		System.out.println("espPubblico: "+ pub.getPublicExponent());

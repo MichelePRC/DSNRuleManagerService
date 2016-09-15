@@ -8,11 +8,11 @@ import it.uninsubria.rulemanagerservice.springmvc.model.User;
 public interface UserDao {
 
 	
-	User findByEmail(String email);
+	User findByIdu(Integer idu);
 	
 	void save(User user);
 	
-	void deleteByEmail(String email);
+	void deleteByIdu(Integer idu);
 	
 	List<User> findAllUsers();	
 

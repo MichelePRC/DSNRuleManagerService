@@ -10,14 +10,14 @@ public interface UserService {
 	
 	
 	
-	User findByEmail(String email);
+	User findByIdu(Integer idu);
 	
-	void deleteByEmail(String email);
+	void deleteByIdu(Integer idu);
 	
 	List<User> findAllUsers();
 		
 	void saveUser(User user);
 			
-	boolean isUserSSOUnique(String email);
+	boolean isUserSSOUnique(Integer idu);
 
 }
