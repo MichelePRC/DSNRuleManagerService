@@ -25,8 +25,8 @@ public class Resource {
 	
 	
 	@ManyToOne 
-	@JoinColumn(name="idu", nullable=false)
-	private Integer id_user_own;	
+	@JoinColumn(name="idu", nullable=false, unique=true)
+	private User owner;	
 	
 	
 	@Column(name="nameR", nullable=false)
@@ -52,17 +52,19 @@ public class Resource {
 	}
 
 
+	
 
-	public Integer getId_user_own() {
-		return id_user_own;
+
+
+	public User getOwner() {
+		return owner;
 	}
 
 
 
-	public void setId_user_own(Integer id_user_own) {
-		this.id_user_own = id_user_own;
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
-
 
 
 

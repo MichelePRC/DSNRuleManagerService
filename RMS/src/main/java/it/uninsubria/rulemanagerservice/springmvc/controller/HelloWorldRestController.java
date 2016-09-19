@@ -13,10 +13,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -64,6 +68,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.mysql.jdbc.util.Base64Decoder;
+
+import it.uninsubria.rulemanagerservice.springmvc.controller.AesUtil;
 import it.uninsubria.rulemanagerservice.springmvc.model.User;
 import it.uninsubria.rulemanagerservice.springmvc.service.UserService;
  
@@ -98,25 +104,140 @@ public class HelloWorldRestController  {
 	
 	
 	
-	@RequestMapping(value = "/createSocialUser/", method = RequestMethod.POST)
-    public HttpStatus createUser(@RequestBody Integer idu, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, JSONException {
-    	User newUser=new User();
-    	newUser.setIdu(idu);							//modificare idu nella tabella user
-    	newUser.setExponent("esponente");
-    	newUser.setModulus("modulo");
-    	newUser.setSecret("segreto");
+	
+	
+	
+	
+	
+	
+	
+	//1 CREATEUSER
+	//DA FARE: LA CREAZIONE COMPRENDE CREAZ USER (IDU E SECRET) LATO RMS, INVIO DEL MESSAGGIO A KMS, RICEZIONE CHIAVI CLIENT (CIFRATE) INVIO CHIAVI CIFRATE A CLIENT
+	@RequestMapping(value = "/createSocialUser1/", method = RequestMethod.POST)
+    public void createUser1 (HttpServletRequest request, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, JSONException {
+
+		StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str = null;
+        while ((str = br.readLine()) != null) {
+            sb.append(str);
+        }
+        
+        JSONObject msgtoRMS=new JSONObject(sb.toString());
+        
+        int iduser=msgtoRMS.getInt("idu");
+        String userSecret=new AesUtil(128,1000).random(128/8).toString();
+        
+        User user=new User();
+        user.setIdu(iduser);
+        user.setSecret(userSecret);
+        userService.saveUser(user);
+        
+        String msgtoKMS=msgtoRMS.getString("encryptedmsgtoKMS");
+        
+
+        URL url = new URL("http://193.206.170.148/KMS/clientAsymmKeyPairReq/");
+		URLConnection urlConnection = url.openConnection();
+		urlConnection.setDoOutput(true);
+		urlConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		urlConnection.connect();
+		OutputStream outputStream = urlConnection.getOutputStream();
+		outputStream.write(msgtoKMS.getBytes());		
+		outputStream.flush();
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+		String line;
+	    StringBuffer responseKMS = new StringBuffer(); 
+	    while((line = reader.readLine()) != null) {
+	    	responseKMS.append(line);
+	    	responseKMS.append('\r');
+	    }
+		
+	    PrintWriter pw = null;
     	
-    	userService.saveUser(newUser);
-    	
-    	User u=userService.findByIdu(idu);
-    	if (u==null){
-    		return HttpStatus.NOT_FOUND;
-    	}
-    	return HttpStatus.OK;
+  	 	try{
+       	pw = response.getWriter();    	
+       	pw.println(responseKMS.toString());
+       	}catch(Exception ex)
+       	{
+       	pw.println("{");
+       	pw.println("\"successful\": false,");
+       	pw.println("\"message\": \""+ex.getMessage()+"\",");
+       	pw.println("}");
+       	return;
+       	}
+		
+		
 	}
     
-    
-    
+    //2 CREATEUSER: RICEVE DAL CLIENT LA PUBLIC KEY E LA MEMORIZZA NELLA SUA TABELLA USER
+	@RequestMapping(value = "/createSocialUser2/", method = RequestMethod.POST)
+    public void createUser2 (HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, JSONException {
+	
+		StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str = null;
+        while ((str = br.readLine()) != null) {
+            sb.append(str);
+        }
+        JSONObject messaggioInChiaro = new JSONObject(sb.toString());
+        
+        String paramRMS=messaggioInChiaro.getString("encrypted_symmKey");			//ACCEDO ALLA KEYSIMM CIFRATA TRAMITE CHIAVE PUBBLICA DI RMS
+        
+        RSAPrivateKeySpec spec = new RSAPrivateKeySpec(new BigInteger("17714908574856389042047912980040795159637941050288872641206841191521734706784824832587434981882447608061483516636172075038361031641464335903337528243013601798968698688028612808889155394216948237201735891627985050112232818125882516408062750119579076532728058982496002319380681963642398518248582531197827290636948450219681285816430149218145081558444117686831521075752620790347565538493795037354011541355760251161663100066112133754391379261720042326840236102811977234477719273601679510118145984721644619247954955084233630790301208917025621493044134461979822724888691405830185658708289093804087754091527782031674415494421"), new BigInteger("3193100309669019389866975846212397778671635833606397188009466637097307659661704621013402649510617721196122873827350973075181330649566171781224746648987895052431713957027053467680967890991116613913729741791680842836501614058029054829004154403811398615760815428845160373511817691327153420145421753223979336623450286456680659702981887841904851516103670703517747044018559696301849847656525215149550874762061740130122693552122371039672803732736921211104351033717193752619213654445454041991222502562351748180793135077431242863828024145583498865011149171566439944824817170908360572903125256698750197062617755564419422244029"));
+    	KeyFactory factory = KeyFactory.getInstance("RSA");
+    	PrivateKey priv = factory.generatePrivate(spec);
+
+    	Cipher cipher;
+        
+        byte[] dectyptedText = new byte[1];
+        try {
+          cipher = javax.crypto.Cipher.getInstance("RSA");
+          
+          byte[] messaggioCifratoBytes = new byte[256];
+
+          BigInteger messaggioCifrato = new BigInteger(paramRMS.toString(), 16);
+          if (messaggioCifrato.toByteArray().length > 256) {
+              for (int i=1; i<257; i++) {
+            	  messaggioCifratoBytes[i-1] = messaggioCifrato.toByteArray()[i];
+              }
+          } else {
+        	  messaggioCifratoBytes = messaggioCifrato.toByteArray();
+          }
+         
+          cipher.init(Cipher.DECRYPT_MODE, priv);
+          dectyptedText = cipher.doFinal(messaggioCifratoBytes);
+          } catch(NoSuchAlgorithmException e) {
+        	  System.out.println(e);
+          } catch(NoSuchPaddingException e) { 
+        	  System.out.println(e);
+          } catch(InvalidKeyException e) {
+        	  System.out.println(e);
+          } catch(IllegalBlockSizeException e) {
+        	  System.out.println(e);
+          } catch(BadPaddingException e) {
+        	  System.out.println(e);
+          }
+          String messaggioDecifrato = new String(dectyptedText);
+          JSONObject AESSimmKey = new JSONObject(messaggioDecifrato);
+          
+          String salt=AESSimmKey.getString("salt");							//ACCEDO ALLA KEYSIMM in CHIARO
+          String iv=AESSimmKey.getString("iv");
+          String passphrase=AESSimmKey.getString("passPhrase");
+          
+          AesUtil aesUtil=new AesUtil(128, 1000);
+          String strmsgRMS=aesUtil.decrypt(salt, iv, passphrase, messaggioInChiaro.getString("clientPubKeyToRMS"));		//OTTENGO LA STRINGA DEL MESSAGGIO A RMS
+          
+          JSONObject clientPubKeyToRMS=new JSONObject(strmsgRMS);	
+        
+        
+        User user=userService.findByIdu(clientPubKeyToRMS.getInt("idu"));
+        user.setModulus((new BigInteger(clientPubKeyToRMS.getString("client_mod"), 16)).toString());
+        user.setExponent((new BigInteger(clientPubKeyToRMS.getString("client_pub_exp"), 16)).toString());
+        userService.updateUser(user);
+	}
+	
     
     @RequestMapping(value = "/getPublicKeys/", method = RequestMethod.GET)
     public void getPublicKeys( HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{

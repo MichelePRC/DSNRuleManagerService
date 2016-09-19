@@ -102,6 +102,39 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 	    				console.error('Error encrypt');
 	    				return $q.reject(errReponse);
 	    			});
+		},
+		
+		
+		createSocialUser1:function(dataToSend){
+	    	return $http({
+	    		url: 'http://localhost:8080/RMS/createSocialUser1/',
+	            method: "POST",
+	            data: dataToSend
+	        }
+	    			).then(
+	    			function(response){
+	    				return response.data;
+	    			},
+	    			function(errResponse){
+	    				console.error('Error creating user');
+	    				return $q.reject(errReponse);
+	    			});
+		},
+		
+		createSocialUser2:function(dataToSend){
+	    	return $http({
+	    		url: 'http://localhost:8080/RMS/createSocialUser2/',
+	            method: "POST",
+	            data: dataToSend
+	        }
+	    			).then(
+	    			function(response){
+	    				return response.data;
+	    			},
+	    			function(errResponse){
+	    				console.error('Error creating user');
+	    				return $q.reject(errReponse);
+	    			});
 		}
 		
 		

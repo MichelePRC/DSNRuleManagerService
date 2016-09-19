@@ -17,6 +17,8 @@ public interface UserService {
 	List<User> findAllUsers();
 		
 	void saveUser(User user);
+	
+	void updateUser(User user);
 			
 	boolean isUserSSOUnique(Integer idu);
 

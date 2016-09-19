@@ -12,6 +12,8 @@ public interface UserDao {
 	
 	void save(User user);
 	
+	void update(User user);
+	
 	void deleteByIdu(Integer idu);
 	
 	List<User> findAllUsers();	

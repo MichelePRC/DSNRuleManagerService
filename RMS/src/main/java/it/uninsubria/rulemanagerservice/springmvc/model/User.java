@@ -19,21 +19,20 @@ public class User {
 		
 	
 	@Id 
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="idu", unique=true, nullable=false)
 	private Integer idu;
 	
 		
-	@NotEmpty
-	@Column(name="modulus", nullable=false)
+
+	@Column(name="modulus", nullable=true)
 	private String modulus;
 	
-	@NotEmpty
-	@Column(name="exponent", nullable=false)
+
+	@Column(name="exponent", nullable=true)
 	private String exponent;
 		
-	@NotEmpty
-	@Column(name="secret", nullable=false)
+
+	@Column(name="secret", nullable=true)
 	private String secret;
 	
 	public User (){}

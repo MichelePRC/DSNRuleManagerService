@@ -27,6 +27,10 @@ public class UserServiceImpl implements UserService{
 		dao.save(user);
 	}
 	
+	public void updateUser(User user) {
+		dao.update(user);
+	}
+	
 	public void deleteByIdu(Integer idu) {
 		dao.deleteByIdu(idu);
 	}

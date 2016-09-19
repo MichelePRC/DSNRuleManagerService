@@ -145,7 +145,7 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 				 }
 			 );*/
     	 	
-    	 	//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DELLA PRIMA RICHIESTA DI UPLOAD
+    	 	/*//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DELLA PRIMA RICHIESTA DI UPLOAD
     	 	var idu=34;
     	 	var fileName="beautiful-photo3"
     	 	var n2=Math.floor(Math.random()*100+1);
@@ -161,9 +161,9 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 			
 			rsa.setPrivate("db7006be332a0df64a30fc70ec6c9559b52e386b5313df5aed84fd080deefd455a960233489331e164ac26d5c688707260b7c4e466fab4925375f9219b6042e34910a6549300f3369eab9c88ddc63fca7495c13b261ee171f13eb845e3ead7d161a47f78d8f0c07da0f4adeb30fd72d7585545ec5ae6a37d2b70233c08b6a592edd2c37801cc50cf8446bd9eb3170b40c88605cd556af05c36057a90cf106a5ac840d29bdc4a068b5957dd13a44315eb7e45ca02234b6fbd07e31a24ce74051051480209bcad25bd7fcc1882c64f73319ebff6ac0b6c58c1cf19d14f55fa0a76fd210704f2bd191fe81f7ac5a4c43b8340e4306dd665345b27691fba692005ad", "10001", "386b3b3097d30e37eea75da063091ff52aa2319b5686db7c736927ed7437a822b6c1aedb24a3c3c561aee965396047190148fe74830d9e73a8c5c24223c2c22fd1cf5814929f41e91f2e9c568c3eb6940519a3cee364392ea48a2db2ba80dcf0569c86b1b9855cd87013b8cba992e07e01961b1e43d8dcdc07d91316125f737e3384603ccbfc67d014128ec871e071524e1997247b4517e22d2d10370280fb122ff59d394924855da2a3562d5da4f129c15529607fa075506e1df2b54a767291a35040133e1ebce10b490800874c004213bf1f6e6291ae42c28b28d0f155e00eac7cb32ca0f94abbacec8ae42e2ca191a11b633ce7d919eb653f9db5c46c0801");
 			console.log(JSON.parse(rsa.decrypt("1c8db3a2baf2d191abecc06d2289248ae8d83f5939dc3c37fba994a726e20ba100959da4aac91840fedc559579c93d0586e6a29b638bc3d3bd3cbad3088af62bca8a5e2b1bfe48f6493fe948cfad24fe92ded24c7745896a91d81824d5d6d6a34b5faf5a02f9d46a7413afd66feef2b18fc47bdb42017d23e8b99f4fd17723bd629f437cd1b98002e809c9b8234d227b2cee830de0ff0e5ad47e1d3b3806e25febbd1fbfd18d7bb3c09e918e50dd45c536970ce7095f92f3dda7abcfdf27da3cb341eecef82831d381758534927fdc4dae1b708432937abb2b96985d8d317b8ea2098dd5bfe73afb3c751844b153482933bca243a55090ca98eb262ef0bf745d")));
+			*/
 			
-			
-			//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DELLA SECONDA RICHIESTA DI UPLOAD CON RSC CIFRATA
+			/*//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DELLA SECONDA RICHIESTA DI UPLOAD CON RSC CIFRATA
 			var strcryptedrsc="ffuhrwqanfvujytrhanqbuiohu454j523nbkj6kjkbnjk";
 			var msgKMS2={"idu": idu, "idR": fileName, "n2+2": n2+2, "cryptedRsc": strcryptedrsc};
 			var msgKMS2=JSON.stringify(msgKMS2);
@@ -184,25 +184,27 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 	    	var msgtoKMS={"encryptedmsgKMS": encryptedmsgKMS, "asymmkey": asymmkey};
 	    	msgtoKMS=JSON.stringify(msgtoKMS);
 	    	
-			console.log(msgtoKMS);
+			console.log(msgtoKMS);*/
 			
 			
+	
 			
 			
-			
-			
-			
-			
-			
-			/*//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DI RICHIESTA GENERAZIONE DELLE CHIAVI ASIMM PER CLIENT
-			var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+			//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DI RICHIESTA GENERAZIONE DELLE CHIAVI ASIMM PER CLIENT
+    	 	var hexMod="8c82122dd58edd13c5009a635148c2f865384ba7742c5f7f6791c5e2076ab92a5d3f5c17c5f78fbe71aafcde906fbb29b790d3f69d8982c11cdffb61de7e87afb6e603b7c1d2c0ec26b0d6964c7f89a05688d3d9704f330c0354837d00280137460f73dc701d8758ab61be034c6a61deefc8f74afd77563c9ef528e1f9fdfef9174e3da64b131b1341ca17ce4ba483d76442e1c214ddc30a0c21ac8c777516feb7c5fc90016b99fa455c16b7ed4c1d09a3d0cbcce4ecfc09f3476ceae135e90fa86d669c28bc6e8f878ad67e8e01327fe12ea183e109735fe444fc9c05cdeac59ade3c3fcc20b6597ad8fdbf90de3d603f9493ae82089e78c00c1778e6c741e7";
+    	 	var hexExp="10001";
+    	 	var rsa=new RSAKey();
+    	 	rsa.setPublic(hexMod,hexExp);
+    	 
+    	 
+    	 	var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
 	    	var salt= CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
 	    	var keySize = 128;
 	    	var iterationCount = 1000;
-	    	var passPhrase = "passphrase";
-	    	var idu=34;
+	    	var passPhrase = "passphrase-client";
+	    	var idu=50029;
 	    	
-	    	var dataToSend={
+	    	var msgtoKMS={
 			    	 "iv": iv,
 			    	 "salt": salt,
 			    	 "keySize": keySize,
@@ -210,16 +212,67 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 			    	 "passPhrase": passPhrase,
 			    	 "iduser": idu
 			    	 };
+	    	
 			
-			var jsontoStringMessaggio=JSON.stringify(dataToSend);   				
+			var msgtoKMS=JSON.stringify(msgtoKMS);   				
 			
-			console.log(rsa.encrypt(jsontoStringMessaggio));
+			var encryptedmsgtoKMS=(rsa.encrypt(msgtoKMS));
 			
-			/*var aesUtil = new AesUtil(keySize, iterationCount);
-			var toDecrypt="1z9A/RNFKQMi2fVn9yztcqBsgDG1T3CRJX6klqFFxYjnf9DtpgUtck2d4nPQ+6LCGD1nZWsnkviDi5Xo5GvNaXWKgPfOWnRArTE8scQ8uEv8C7685mcc29uiLzVkvMLBkA5BojnE8lDQDhmPNm4zBui+c+9cY2mYApS42HTkD6THpr6LtQ54qCASDYsUUP6k8+QS3LHtcLXqSMQbxGVeV3nQyyVD6MxrXVvTK60+FuohMToIMlZv8yxy9SVomkin0J8bzbdpLIV40MzpUQRXgBKZgBkrgB1A80j1wGhxlW5xTux2b/wRjhHBuT5oyecyGrHfXQFxZZWzjsKKacI6rigNu6y/tW4ZwXMywaZ9qU9BA9U2hE6kmC2hsoXSJnZsoaBB7wqPvLP4bqFnMPTsto6HyLbnDI4VwkczKepB39Wd8Di5QvDU6HpRUaFF6YklA2sbFdIvY/D22RF6kENGTDOusb6ZIxVDV5995dxWpwbCzMuxoc+H3DXTPuMeoG234b0EJANrCRfMahn617M6aUvZut/gU8+BIO5bKqoxkr3oIVY0rYKBWx5FyIBZtZVVJgPqVdk8FXPJNoLh55bvilQgpczyAk7zE+1bhiEGZyh0OcK+a/0Zhm6OqTHkvsGpjBLJle68xxbIaNr7LdCDTbk5FAQG1WOMeAIYI+MmEFPW/QdFSmw7hVcmhIHOyLRKDXD4VPGk97UncUkAQo+vKiTdvLv5IGNv8AYlQGN2PuMTvBFPj/Ca7hUEgzT18RXTitNRBs5UENVOFG4j4aFbJP/14HdiGNdLvQH7gq8btD5ceUTfi25LhTR3STX5jaF4IcrL/Ck9qSOhsEmWfL15Xccb1epQ4J/yuxLT7rlLbRZgKh5aaJmcAYm6piCDt69M3ZKj3JWu1PKo9vjOtxN7qbxBvevOHjhO3zxtPt7e1ekong4On++S+3oj6vKXODhc4gRI02eEobmC8lrfmKHreukFUOQbEAWZaJUxkzgaH9tfLCdLP1v1PMVPswSyLuUZhn/he5t5/iUheQzMMRlEOGNNARr+KFm7ouBnnJsUfGu34Uej+YQAQF4o70KsU58BhPjMsVzbTT1wbWqmdo9w/abx2+VkLZawHyWqziOm+pH2rnu2zslhlAg5b3fqDyGTnjTVmqr6PVOIXNxcXmJ6VFtEFBCe4aP6zEMT9gYWBxg+ZT+sOsoUO2VdBmzq00/5sssP+14+8gp8n057UVrAYNL/7kWXHCNnLrL0Rc4Q7VicDdpxiWJ8Oq/pVV/y+xA/9GipkkIK8Sd5Qt395Jwhfpdf+DHVUvSjRD+9YD7iaC82QLDVD2zFEu6GwsINf4Rny+1I28fhVUBo4WY2Wb04EwgKDTAEq8Cn8/MtE6EPafeYm+C7gxWLdWms87ngPdAHuEKXTCGJyAA1us/DFrfAJjMHNMzwSk+6gI3ovRdfbc94/8SZBF755eRd8phqXHAt26hhcnKriq9ope2BTgBA4w==";
-	    	var decrypted = aesUtil.decrypt("c0862dbe27f578626b2dd211ab79aaf9", "8eccd9eae49d141f074a6527eb8d507b", passPhrase, toDecrypt );
-			var jsonmsg=JSON.parse(decrypted);
-			console.log(jsonmsg);*/
+			var msgtoRMS={"idu": idu, "encryptedmsgtoKMS": encryptedmsgtoKMS};			
+			var msgtoRMS=JSON.stringify(msgtoRMS); 
+			
+			LoginService.createSocialUser1(msgtoRMS)
+			.then(
+					function(data){
+						var aesUtil = new AesUtil(keySize, iterationCount);
+				    	var decrypted = aesUtil.decrypt(salt, iv, passPhrase, data );
+				    	
+						var jsonmsg=JSON.parse(decrypted);
+						console.log(jsonmsg);
+						var client_modulus=jsonmsg.client_modulus;
+						var client_pub_exponent=jsonmsg.client_public_exponent;
+						
+						var clientPubKeyToRMS={"client_pub_exp": client_pub_exponent, "client_mod": client_modulus, "idu": idu};
+						clientPubKeyToRMS=JSON.stringify(clientPubKeyToRMS);
+						
+						var iv2=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+						var salt2=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+						
+						clientPubKeyToRMS=aesUtil.encrypt(salt2, iv2, passPhrase, clientPubKeyToRMS);
+						
+						//CIFRO IL MSG TRAMITE CHIAVE PUBBLICA DI RMS, IL MESSAGGIO CONTIENE LA CHIAVE PUBBLICA DEL CLIENT
+						rsa.setPublic("8c5440573592b8bbecd6ee1807b2524747a41081e2730149cf0597921996ce64ef1836a8fdf0e6530d04676dab2546a919e8e4b4e03731bb1aa3615e79f5d23f2906459af8a6e2f431ac39f49897b60adc7bef81bd01287e99857f325540c9527fcb33995e08e384143c4b915104cd9cc192d57d52cbee33ee4283e113ea781e25bdd15648f35392df3387a25d83a6b189f4e74570a7ab6555a99bb56cf0e7ca24c9bcc2d35b5b80c0dee492f00191596304f5b12893f2bafbacd5c3d74ef12c1ee92dd69e63f5a3cdbd773027de77af15407699492df933ff43b051a987da4c1876776257b483bf93132cd2f82484a60fbc0584b8f63d4435c918cfe05fb515", "10001")
+						
+						var symmKey={
+							"iv": iv2,
+					    	 "salt": salt2,
+					    	 "keySize": keySize,
+					    	 "iterationCount": iterationCount,
+					    	 "passPhrase": passPhrase,							
+						}
+						
+						symmKey=JSON.stringify(symmKey);
+						var encrypted_symmKey=rsa.encrypt(symmKey);
+						
+						var encrypted_clientPubKeyToRMS={"clientPubKeyToRMS": clientPubKeyToRMS, "encrypted_symmKey": encrypted_symmKey };
+						
+						LoginService.createSocialUser2(encrypted_clientPubKeyToRMS)
+						.then(
+								function(data){									
+								},
+								function(errResponse){
+									console.error('Error clientpubkeys');
+								}
+						);
+						
+					},
+					function(errResponse){
+						console.error('Error clientpubkeys');
+					}
+			);
+			
+			
+
 			
 	
 	

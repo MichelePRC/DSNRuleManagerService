@@ -37,6 +37,10 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
 	public void save(User user) {
 		persist(user);
 	}
+	
+	public void update(User user) {
+		super.update(user);
+	}
 
 	public void deleteByIdu(Integer idu) {
 		Criteria crit = createEntityCriteria();
