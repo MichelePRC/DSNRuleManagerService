@@ -16,7 +16,7 @@ public class UploadRequest {
 	
 	@Id
 	@Column(name="id", nullable=true, unique=true)
-	private Integer token;
+	private String token;
 	
 	
 	@Column(name="nonce", nullable=true)
@@ -31,14 +31,18 @@ public class UploadRequest {
 	public UploadRequest(){}
 
 
-	public Integer getToken() {
+
+
+	public String getToken() {
 		return token;
 	}
 
 
-	public void setToken(Integer token) {
+	public void setToken(String token) {
 		this.token = token;
 	}
+
+
 
 
 	public Integer getNonce() {

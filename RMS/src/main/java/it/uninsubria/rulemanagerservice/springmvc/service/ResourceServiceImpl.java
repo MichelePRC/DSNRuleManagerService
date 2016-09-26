@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.uninsubria.rulemanagerservice.springmvc.dao.ResourceDao;
 import it.uninsubria.rulemanagerservice.springmvc.model.Resource;
+import it.uninsubria.rulemanagerservice.springmvc.model.User;
 
 
 @Service("resourceService")
@@ -22,30 +23,7 @@ public class ResourceServiceImpl implements ResourceService{
 		Resource resource = dao.findByIdR(idR);
 		return resource;
 	}
-	
-	public Resource findByName (String name){
-		Resource resource = dao.findByName(name);
-		return resource;
-	}
-	
-	
-	public Resource findByNameAndIdOwner(String name, Integer id_own){
-		Resource resource = dao.findByNameAndIdOwner(name, id_own);
-		return resource;
-	}
-	
-	
-	public boolean exists (String name, Integer id_owner){
-		if (dao.findByNameAndIdOwner(name, id_owner)!=null)
-			return true;
-		else
-			return false;
-		
-	}
-	
-	public void deleteByIdR(Integer idR) {
-		dao.deleteByIdResource(idR);
-	}
+			
 	
 
 	public void saveResource(Resource Resource) {

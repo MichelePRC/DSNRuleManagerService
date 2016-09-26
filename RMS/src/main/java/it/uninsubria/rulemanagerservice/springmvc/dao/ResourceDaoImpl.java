@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import it.uninsubria.rulemanagerservice.springmvc.model.Resource;
+import it.uninsubria.rulemanagerservice.springmvc.model.User;
 
 
 
@@ -26,22 +27,7 @@ public class ResourceDaoImpl extends AbstractDao<Integer, Resource> implements R
 		return resource;
 	}
 	
-	public Resource findByName(String name) {
-		Criteria crit = createEntityCriteria();
-		crit.add(Restrictions.eq("name", name));
-		Resource resource = (Resource)crit.uniqueResult();
-		return resource;
-	}
-	
-	
-	public Resource findByNameAndIdOwner(String name, Integer id_own) {
-		Criteria crit = createEntityCriteria();
-		crit.add(Restrictions.eq("name", name));
-		crit.add(Restrictions.eq("id_owner", id_own));
-		Resource resource = (Resource)crit.uniqueResult();
-		return resource;
-	}
-		
+
 
 	public void save(Resource resource) {
 		persist(resource);

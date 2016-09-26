@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import it.uninsubria.rulemanagerservice.springmvc.model.Resource;
+import it.uninsubria.rulemanagerservice.springmvc.model.User;
 
 
 public interface ResourceService {
@@ -11,14 +12,6 @@ public interface ResourceService {
 	
 	
 	Resource findByIdR(Integer idR);
-	
-	Resource findByName(String name);
-	
-	Resource findByNameAndIdOwner(String name, Integer id_own);
-	
-	boolean exists (String name, Integer id_owner);
-	
-	void deleteByIdR(Integer idR);
 	
 	List<Resource> findAllResources();
 		

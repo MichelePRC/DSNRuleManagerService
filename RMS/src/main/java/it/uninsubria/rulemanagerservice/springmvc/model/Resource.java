@@ -19,21 +19,17 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class Resource {
 	
 	@Id 
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="idR", nullable=false)
-	private Integer idR;
+	@Column(name="idR", nullable=false, unique=true)
+	private int idR;
 	
 	
 	@ManyToOne 
-	@JoinColumn(name="idu", nullable=false, unique=true)
+	@JoinColumn(name="idu", nullable=false)
 	private User owner;	
+		
 	
 	
-	@Column(name="nameR", nullable=false)
-	private String nameR;
-	
-	
-	@Column(name="sharingDepth", nullable=false)
+	@Column(name="sharingDepth", nullable=true)
 	private int sharingDepth;	
 
 	
@@ -41,13 +37,13 @@ public class Resource {
 
 	
 
-	public Integer getIdR() {
+	public int getIdR() {
 		return idR;
 	}
 
 
 
-	public void setIdR(Integer idR) {
+	public void setIdR(int idR) {
 		this.idR = idR;
 	}
 
@@ -68,20 +64,6 @@ public class Resource {
 
 
 
-	public String getNameR() {
-		return nameR;
-	}
-
-	
-	
-
-	public void setNameR(String nameR) {
-		this.nameR = nameR;
-	}
-
-
-
-
 	public int getSharingDepth() {
 		return sharingDepth;
 	}
@@ -98,7 +80,7 @@ public class Resource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((idR == null) ? 0 : idR.hashCode());
+		result = prime * result + idR;
 		return result;
 	}
 
@@ -113,13 +95,14 @@ public class Resource {
 		if (getClass() != obj.getClass())
 			return false;
 		Resource other = (Resource) obj;
-		if (idR == null) {
-			if (other.idR != null)
-				return false;
-		} else if (!idR.equals(other.idR))
+		if (idR != other.idR)
 			return false;
 		return true;
 	}
+
+
+
+	
 
 
 

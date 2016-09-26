@@ -107,7 +107,8 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 		
 		createSocialUser1:function(dataToSend){
 	    	return $http({
-	    		url: 'http://localhost:8080/RMS/createSocialUser1/',
+	    		//url: 'http://localhost:8080/RMS/createSocialUser1/',
+	    		url: 'http://193.206.170.143/RMS/createSocialUser1/',
 	            method: "POST",
 	            data: dataToSend
 	        }
@@ -124,6 +125,7 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 		createSocialUser2:function(dataToSend){
 	    	return $http({
 	    		url: 'http://localhost:8080/RMS/createSocialUser2/',
+	    		//url: 'http://193.206.170.143/RMS/createSocialUser2/',
 	            method: "POST",
 	            data: dataToSend
 	        }

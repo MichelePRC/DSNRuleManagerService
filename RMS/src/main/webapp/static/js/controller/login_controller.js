@@ -1,10 +1,12 @@
 'use strict';
 
 App.controller('LoginController',['$scope','$window','LoginService',function($scope,$window,LoginService){
-	 var modulo="ad4071de41593092e891f6b4a09d68c50493bc3adcc3e177b27632fb4ae6ae04bc11decdc5b162a0550b8a4592285f11fdab5fe2d3ee1bc26a25f694844501dc0b652d235ab58584ef970f3b5edc4dffc466faf736d87ab0c06fe36020ad37e0eb6e99b7f63abfa0facae9ef5e6dba8a9d959e329762239d9770708cae92fb01f0fcc7d9f9aad3b8c57df9b76d6f6c91ab1b730fae7759899e14164e93e2489e667bb6bfc18cb1011260480a102bb57d562b8ac7654d7daabf52617622eb2d85d93eff47873a92fb7a495ea1a8f4e47616d06fed3529087bd307d5222bf1a2c21c6e7fd9a49e6b1f2bff27f14483fc0044464c36890a1d9c2ce349fcf6a86521";
-	 var esponente_pubblico="10001"
-	 var esponente_privato="5f7f1244cc087979c0b01428640fdfdc1935c59f3c68cc32ca2fd4d226eb18288bf1ddb9d6aa7c0e9c520c196502d3c47aeaa7a3c3e58f6f8e4af6abce6cab25bb323dbb2b18bb4c173450b50d08aa05bd20765d25e2155eaff3fc84d3fe26bad78ad3384f84fa73a5498bc0e16fe24edda5c6d964103849795c04edc69c45b654c1c7f4892c0fb43befe209fdbb6d1c7d4ee1a436c494e5be4cbd387994b82e1ece3bf69bbb0632f5cc5cbe947d03b1799e6aefe90362b6089847f1a2f488a9e80c76089ea173d3425c6e0825030f263eedcd2aa4ac450a996d7148d8aae4dde4710e9beba0e524568d0076a701101c02e5525bf169281df69013ed150cbc31";
-     $window.onload=function (){
+	 var KMSmodulo="8c82122dd58edd13c5009a635148c2f865384ba7742c5f7f6791c5e2076ab92a5d3f5c17c5f78fbe71aafcde906fbb29b790d3f69d8982c11cdffb61de7e87afb6e603b7c1d2c0ec26b0d6964c7f89a05688d3d9704f330c0354837d00280137460f73dc701d8758ab61be034c6a61deefc8f74afd77563c9ef528e1f9fdfef9174e3da64b131b1341ca17ce4ba483d76442e1c214ddc30a0c21ac8c777516feb7c5fc90016b99fa455c16b7ed4c1d09a3d0cbcce4ecfc09f3476ceae135e90fa86d669c28bc6e8f878ad67e8e01327fe12ea183e109735fe444fc9c05cdeac59ade3c3fcc20b6597ad8fdbf90de3d603f9493ae82089e78c00c1778e6c741e7";
+	 var KMSesponente_pubblico="10001"
+	 var KMSesponente_privato="5f94e414f5dfd798693d3dc92e34571d6e8ddb39309836e68e67e5bb1adc88d5bed5292aaaeafb87cbff4b4183f3ddd8451d6a73ab3b2e0d7c3d09decbe23b1f574625654d9eb6ca6e8f818a80c389b5dee7f96543373d3c80cf6f1b0b8e2b35949d526db47f01e159c485e3ec89b9c6544bdb9dd1caea89168123ac85c93936eb2c2cd783408f39fab563586fa5a974b4f45a8b4dd6ebeb2c873eff4ca64c80ab61cab54237ba3867fa44c79214c9f1d5e6907fc705a8b50435cee81123ee0589353f37336c753c10fba26bf7e460e461f8c5710a1f493adbcb71643226f25623872ee14149fc58ce3ee02c0c286b1790c8bfcc3d058cf4041fc8ff166beec1";
+     
+	 
+	 $window.onload=function (){
    	
         /*LoginService.download()
          .then(
@@ -191,7 +193,7 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 			
 			
 			//GENERAZIONE DEL MESSAGGIO DIRETTO A KMS DI RICHIESTA GENERAZIONE DELLE CHIAVI ASIMM PER CLIENT
-    	 	var hexMod="8c82122dd58edd13c5009a635148c2f865384ba7742c5f7f6791c5e2076ab92a5d3f5c17c5f78fbe71aafcde906fbb29b790d3f69d8982c11cdffb61de7e87afb6e603b7c1d2c0ec26b0d6964c7f89a05688d3d9704f330c0354837d00280137460f73dc701d8758ab61be034c6a61deefc8f74afd77563c9ef528e1f9fdfef9174e3da64b131b1341ca17ce4ba483d76442e1c214ddc30a0c21ac8c777516feb7c5fc90016b99fa455c16b7ed4c1d09a3d0cbcce4ecfc09f3476ceae135e90fa86d669c28bc6e8f878ad67e8e01327fe12ea183e109735fe444fc9c05cdeac59ade3c3fcc20b6597ad8fdbf90de3d603f9493ae82089e78c00c1778e6c741e7";
+    	 	/*var hexMod="8c82122dd58edd13c5009a635148c2f865384ba7742c5f7f6791c5e2076ab92a5d3f5c17c5f78fbe71aafcde906fbb29b790d3f69d8982c11cdffb61de7e87afb6e603b7c1d2c0ec26b0d6964c7f89a05688d3d9704f330c0354837d00280137460f73dc701d8758ab61be034c6a61deefc8f74afd77563c9ef528e1f9fdfef9174e3da64b131b1341ca17ce4ba483d76442e1c214ddc30a0c21ac8c777516feb7c5fc90016b99fa455c16b7ed4c1d09a3d0cbcce4ecfc09f3476ceae135e90fa86d669c28bc6e8f878ad67e8e01327fe12ea183e109735fe444fc9c05cdeac59ade3c3fcc20b6597ad8fdbf90de3d603f9493ae82089e78c00c1778e6c741e7";
     	 	var hexExp="10001";
     	 	var rsa=new RSAKey();
     	 	rsa.setPublic(hexMod,hexExp);
@@ -202,7 +204,7 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 	    	var keySize = 128;
 	    	var iterationCount = 1000;
 	    	var passPhrase = "passphrase-client";
-	    	var idu=50029;
+	    	var idu=50508;
 	    	
 	    	var msgtoKMS={
 			    	 "iv": iv,
@@ -269,11 +271,31 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 					function(errResponse){
 						console.error('Error clientpubkeys');
 					}
-			);
-			
-			
+			);*/
+			/*
+		 	var key=data.AESParams;
+		 	rsa.setPrivate(client_modulus, client_pub_exp, client_priv_exp); //recupera parametri della chiave del client
+ 	 	
+		 	key=rsa.decrypt(key);
+ 	 	
+		 	key=JSON.parse(key);
+ 	 	
+		 	iv=key.iv;
+		 	salt=key.salt;
+		 	passphrase=key.passphrase;
+ 	 	
+		 	var aesUtil = new AesUtil(128, 1000);
+		 	
+		 	decrypted_msg=aesUtil.decrypt(salt, iv, passphrase, data.encrypted_msg_client);
+		 	
+		 	decrypted_msg=JSON.parse(decrypted_msg);
+		 	
+		 	secret_user=decrypted_msg.secretUser;
+		 	nonce_plus_one=decrypted_msg.nonce_one_plus_one;
+		 	kms_msg=decrypted_msg.KMSmsg;*/
+    	 	
+    	 	
 
-			
 	
 	
         
