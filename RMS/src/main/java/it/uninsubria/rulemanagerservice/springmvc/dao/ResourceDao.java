@@ -12,6 +12,8 @@ public interface ResourceDao {
 	
 	void save(Resource resource);
 	
+	void update(Resource resource);
+	
 	List<Resource> findAllResources();	
 
 }

@@ -2,12 +2,37 @@
 
 App.controller('LoginController',['$scope','$window','LoginService',function($scope,$window,LoginService){
 	 var KMSmodulo="8c82122dd58edd13c5009a635148c2f865384ba7742c5f7f6791c5e2076ab92a5d3f5c17c5f78fbe71aafcde906fbb29b790d3f69d8982c11cdffb61de7e87afb6e603b7c1d2c0ec26b0d6964c7f89a05688d3d9704f330c0354837d00280137460f73dc701d8758ab61be034c6a61deefc8f74afd77563c9ef528e1f9fdfef9174e3da64b131b1341ca17ce4ba483d76442e1c214ddc30a0c21ac8c777516feb7c5fc90016b99fa455c16b7ed4c1d09a3d0cbcce4ecfc09f3476ceae135e90fa86d669c28bc6e8f878ad67e8e01327fe12ea183e109735fe444fc9c05cdeac59ade3c3fcc20b6597ad8fdbf90de3d603f9493ae82089e78c00c1778e6c741e7";
-	 var KMSesponente_pubblico="10001"
+	 var KMSesponente_pubblico="10001";
 	 var KMSesponente_privato="5f94e414f5dfd798693d3dc92e34571d6e8ddb39309836e68e67e5bb1adc88d5bed5292aaaeafb87cbff4b4183f3ddd8451d6a73ab3b2e0d7c3d09decbe23b1f574625654d9eb6ca6e8f818a80c389b5dee7f96543373d3c80cf6f1b0b8e2b35949d526db47f01e159c485e3ec89b9c6544bdb9dd1caea89168123ac85c93936eb2c2cd783408f39fab563586fa5a974b4f45a8b4dd6ebeb2c873eff4ca64c80ab61cab54237ba3867fa44c79214c9f1d5e6907fc705a8b50435cee81123ee0589353f37336c753c10fba26bf7e460e461f8c5710a1f493adbcb71643226f25623872ee14149fc58ce3ee02c0c286b1790c8bfcc3d058cf4041fc8ff166beec1";
-     
+
+	 
+	 /*self.getRMS=function(){
+	 LoginService.pubKeys() 
+  	 .then(
+  			 function(data){		 
+  				 //$.jStorage.set("RMSmodulo",data.modulo);
+					
+	    	 },function(errResponse){
+			    		 
+	    		 console.error('Error while receinving RMSPublic Keys');
+					 	    				
+	    	 }
+	  );
+	 }*/
+	 
+
+	 
+	 
+	 
+	 
 	 
 	 $window.onload=function (){
-   	
+   	 
+
+	      	 
+	     
+		 
+		 
         /*LoginService.download()
          .then(
         		 function(data){
@@ -272,30 +297,42 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 						console.error('Error clientpubkeys');
 					}
 			);*/
-			/*
-		 	var key=data.AESParams;
-		 	rsa.setPrivate(client_modulus, client_pub_exp, client_priv_exp); //recupera parametri della chiave del client
- 	 	
-		 	key=rsa.decrypt(key);
- 	 	
-		 	key=JSON.parse(key);
- 	 	
-		 	iv=key.iv;
-		 	salt=key.salt;
-		 	passphrase=key.passphrase;
- 	 	
-		 	var aesUtil = new AesUtil(128, 1000);
-		 	
-		 	decrypted_msg=aesUtil.decrypt(salt, iv, passphrase, data.encrypted_msg_client);
-		 	
-		 	decrypted_msg=JSON.parse(decrypted_msg);
-		 	
-		 	secret_user=decrypted_msg.secretUser;
-		 	nonce_plus_one=decrypted_msg.nonce_one_plus_one;
-		 	kms_msg=decrypted_msg.KMSmsg;*/
-    	 	
-    	 	
 
+		 	/*var iv=CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+	   	 	var salt= CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+	   	 	var passphrase="passphrase";
+		 	var aesUtil = new AesUtil(128, 1000);
+		 	var msgRMS={prova:"ok", "numero":31};
+
+		 	
+		 	msgRMS=aesUtil.encrypt(salt,iv,passphrase,JSON.stringify(msgRMS));
+		 		
+		 	var keyRMS={"iv":iv,"salt":salt,"passPhrase":passphrase};
+		 	var rsa=new RSAKey();
+			rsa.setPublic("8c5440573592b8bbecd6ee1807b2524747a41081e2730149cf0597921996ce64ef1836a8fdf0e6530d04676dab2546a919e8e4b4e03731bb1aa3615e79f5d23f2906459af8a6e2f431ac39f49897b60adc7bef81bd01287e99857f325540c9527fcb33995e08e384143c4b915104cd9cc192d57d52cbee33ee4283e113ea781e25bdd15648f35392df3387a25d83a6b189f4e74570a7ab6555a99bb56cf0e7ca24c9bcc2d35b5b80c0dee492f00191596304f5b12893f2bafbacd5c3d74ef12c1ee92dd69e63f5a3cdbd773027de77af15407699492df933ff43b051a987da4c1876776257b483bf93132cd2f82484a60fbc0584b8f63d4435c918cfe05fb515","10001");
+			var keyRMSencrypt=rsa.encrypt(JSON.stringify(keyRMS));
+			
+			var messageToRMS={"keyRMSencrypt":keyRMSencrypt,"msgRMS":msgRMS};
+			console.log(salt);
+			console.log(iv)
+			console.log(passphrase);
+			console.log(msgRMS);
+			console.log(JSON.parse(aesUtil.decrypt(salt,iv,passphrase,msgRMS)));
+			messageToRMS=JSON.stringify(messageToRMS);
+			LoginService.uploadReq2(messageToRMS)
+				.then(
+						function(data){
+							
+						},function(errResponse){
+							console.error('Error while upload request two.');
+						});*/
+		 	
+		 	/*self.getRMS();
+		 	//$.jStorage.set("ciao", "ciaoooo");
+		 	//$.jStorage.setTTL("ciao", 60000);
+		 	console.log($.jStorage.get("ciao"));
+
+		 	console.log($.jStorage.index());*/
 	
 	
         

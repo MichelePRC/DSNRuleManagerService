@@ -44,7 +44,8 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 		pubKeys:function(){
 	    	return $http({
 	            url : 'http://localhost:8080/RMS/getPublicKeys/',
-	            method : "GET",	            
+	            method : "GET",
+	            contentType: "application/json"
 	        }
 	    			).then(
 	    			function(response){
@@ -137,7 +138,24 @@ App.factory('LoginService',['$http','$q',function($http,$q){
 	    				console.error('Error creating user');
 	    				return $q.reject(errReponse);
 	    			});
-		}
+		},
+		
+		
+		uploadReq2:function(msg){
+			
+			return $http.post('http://localhost:8080/RMS/uploadReq2/',msg)
+			.then(
+					function(response){
+				return response.data;
+			},
+			function(errResponse){
+				console.error(errResponse);
+				return $q.reject(errResponse);
+			}
+			);
+	        
+	        
+	    }
 		
 		
 		

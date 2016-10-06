@@ -24,7 +24,9 @@ public class ResourceServiceImpl implements ResourceService{
 		return resource;
 	}
 			
-	
+	public void update (Resource resource){
+		dao.update(resource);
+	}
 
 	public void saveResource(Resource Resource) {
 		dao.save(Resource);

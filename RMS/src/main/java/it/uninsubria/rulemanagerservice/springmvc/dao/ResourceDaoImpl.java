@@ -32,6 +32,10 @@ public class ResourceDaoImpl extends AbstractDao<Integer, Resource> implements R
 	public void save(Resource resource) {
 		persist(resource);
 	}
+	
+	public void update (Resource resource){
+		super.update(resource);
+	}
 
 	public void deleteByIdResource(Integer idR) {
 		Criteria crit = createEntityCriteria();

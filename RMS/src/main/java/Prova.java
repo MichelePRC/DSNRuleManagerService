@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,19 +32,18 @@ public class Prova {
             buffer.append(Long.toString((int) bytes[i] & 0xff, 16));
         }                        
         return buffer.toString();
-    }   
+    }  
+	
+	
+	public static String random(int length) {
+        byte[] salt = new byte[length];
+        new SecureRandom().nextBytes(salt);
+        return Hex.encodeHexString(salt);
+    }
 
 	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, JSONException {
 		// TODO Auto-generated method stub
-		
-		JSONObject json=new JSONObject();
-		json.put("idu", 162);
-		json.put("idR", 115);
-		json.put("n2", 29);
-		json.put("session_token","79571D34FCE4B46551360A2928764647");
-		String str=json.toString();
-		System.out.println(str.getBytes().length);
-		
+				
 		
 		//genero la coppia di chiavi asimmetriche di RMS
 		 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -100,15 +100,8 @@ public class Prova {
 	   	System.out.println("RMS PRIV exp "+new BigInteger("3193100309669019389866975846212397778671635833606397188009466637097307659661704621013402649510617721196122873827350973075181330649566171781224746648987895052431713957027053467680967890991116613913729741791680842836501614058029054829004154403811398615760815428845160373511817691327153420145421753223979336623450286456680659702981887841904851516103670703517747044018559696301849847656525215149550874762061740130122693552122371039672803732736921211104351033717193752619213654445454041991222502562351748180793135077431242863828024145583498865011149171566439944824817170908360572903125256698750197062617755564419422244029").toString(16));
 	   	
 	   	System.out.println("da hex a biginteger: " + new BigInteger("a8d3c3e59aaa12b6d1a6e719f0c4855165be24485c1b141a0e7f3cad8d86a9d54d835ba40c2605f9d7e5347ba5c6e94218c0b97ba204c8e72673d4db86a5516ade3db22ba54dccd0838205a0fc31ae5fa49aae905496ed57546ad88052ba0e44ff9b5e8d85521a1c3c56c0eb21f39688e06fb8980b72d5bfdebfdc2d3578beea141828f0563ffe69790477398f24a181374e137839867819935ce60d02465c34b763e5f983af2f2b254a2390356a4a0bac87f0ec61b922991ef0569c7cfe4ed21ae6abf7a0b6dc419d9c183840d10d8e9f45c24309b7e9c88e0cb5a03055fff33ca510c3fa42ed1bfb3b741891706a3d3f1f1a01b5353b57cebb27dcccdcc973", 16));
-	   	
-	   	JSONObject obj= new JSONObject();
-	   	obj.put("file1", new AesUtil(128,1000).random(128/8).toString());
-	   	obj.put("file2", new AesUtil(128,1000).random(128/8).toString());
-	   	obj.put("file3", new AesUtil(128,1000).random(128/8).toString());
-	   	obj.put("file4", 128);
-	   	obj.put("file5", 1000); 
-	   	System.out.println("vediamo quanto pesa "+obj.toString().getBytes().length);
-	  
+
+	   	System.out.println();
 	   	
 	   	String modulo=pub.getModulus().toString(16);
 	   	String esponentePubblico=pub.getPublicExponent().toString(16);
@@ -164,6 +157,7 @@ public class Prova {
           }
         String decryptedString = new String(decryptedText);
         System.out.println(new String(decryptedString));
+
 	}
 
 }

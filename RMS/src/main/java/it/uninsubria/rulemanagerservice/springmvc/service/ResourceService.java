@@ -10,11 +10,12 @@ import it.uninsubria.rulemanagerservice.springmvc.model.User;
 public interface ResourceService {
 	
 	
-	
 	Resource findByIdR(Integer idR);
 	
 	List<Resource> findAllResources();
 		
-	void saveResource(Resource resource);			
+	void saveResource(Resource resource);	
+	
+	void update(Resource resource);
 
 }
