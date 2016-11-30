@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -11,6 +12,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONException;
@@ -41,7 +43,68 @@ public class Prova {
         return Hex.encodeHexString(salt);
     }
 
-	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, JSONException {
+	private static byte[] blockCipher(byte[] bytes, int mode, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException{
+		
+		// string initialize 2 buffers.
+		// scrambled will hold intermediate results
+		byte[] scrambled = new byte[0];
+
+		// toReturn will hold the total result
+		byte[] toReturn = new byte[0];
+		// if we encrypt we use 100 byte long blocks. Decryption requires 128 byte long blocks (because of RSA)
+		int length = (mode == Cipher.ENCRYPT_MODE)? 100 : 256;
+
+		// another buffer. this one will hold the bytes that have to be modified in this step
+		byte[] buffer = new byte[length];
+
+		for (int i=0; i< bytes.length; i++){
+
+			// if we filled our buffer array we have our block ready for de- or encryption
+			if ((i > 0) && (i % length == 0)){
+				//execute the operation
+				scrambled = cipher.doFinal(buffer);
+				// add the result to our total result.
+				toReturn = append(toReturn,scrambled);
+				// here we calculate the length of the next buffer required
+				int newlength = length;
+
+				// if newlength would be longer than remaining bytes in the bytes array we shorten it.
+				if (i + length > bytes.length) {
+					 newlength = bytes.length - i;
+				}
+				// clean the buffer array
+				buffer = new byte[newlength];
+			}
+			// copy byte into our buffer.
+			buffer[i%length] = bytes[i];
+		}
+
+		// this step is needed if we had a trailing buffer. should only happen when encrypting.
+		// example: we encrypt 110 bytes. 100 bytes per run means we "forgot" the last 10 bytes. they are in the buffer array
+		scrambled = cipher.doFinal(buffer);
+
+		// final step before we can return the modified data.
+		toReturn = append(toReturn,scrambled);
+
+		return toReturn;
+	}
+	
+	private static byte[] append(byte[] prefix, byte[] suffix){
+		byte[] toReturn = new byte[prefix.length + suffix.length];
+		for (int i=0; i< prefix.length; i++){
+			toReturn[i] = prefix[i];
+		}
+		for (int i=0; i< suffix.length; i++){
+			toReturn[i+prefix.length] = suffix[i];
+		}
+		return toReturn;
+	}
+	
+	
+	
+	
+	
+	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, JSONException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, UnsupportedEncodingException, DecoderException {
 		// TODO Auto-generated method stub
 				
 		
@@ -82,8 +145,6 @@ public class Prova {
 	    System.out.println(RandomStringUtils.random(16, characters));
 	    System.out.println(System.currentTimeMillis()-startTime);
 	    
-	   	System.out.println(new AesUtil(128,1000).random(128/8).toString());
-	   	System.out.println((new AesUtil(128,1000).random(128/8).toString())+(new AesUtil(128,1000).random(128/8).toString()));
 	   	
 	   	System.out.println("chiavi di KMS E RMS");
 	   	//HEX DI KMS
@@ -119,10 +180,6 @@ public class Prova {
 		System.out.println("espPrivato(esadecimale): "+ esponentePrivato);
 		
 		
-		
-		RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger("23076546670056382309675054116609040477208471004209380863855606650960962742115843277262108558426555916075399719555489895433024050073799569649162293863507972661326664599854138870797227933079861523403768730506679363954584828292063156824702424833432690179070099913575305738144033153438097384309193716715004310414080605968132393258029991591883815882977877481907553110366277146252057636898463148391247124533831919464487629013848318704585424925854086871697115584305352479303356052261633569037370265192429688221743912721192578332941912747857793485050298571142861008809163831625486021237824752427873536844232165227271010703893"), new BigInteger("65537"));
-    	KeyFactory factory = KeyFactory.getInstance("RSA");
-    	PublicKey pub2 = factory.generatePublic(spec);
     	
     	String text="proviamoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";    	
         Cipher cipher;
@@ -157,7 +214,44 @@ public class Prova {
           }
         String decryptedString = new String(decryptedText);
         System.out.println(new String(decryptedString));
+        
+        //-----------------
+        System.out.println("////////////////////////////////////////////////////");
+        
+        JSONObject msg=new JSONObject();
+        
+        msg.put("elem1", random(16));
+        msg.put("elem2", RandomStringUtils.random(16, characters));
+        msg.put("elem3", esponentePrivato);
+        
+        System.out.println(msg.toString().getBytes().length);
+        
+        byte [] bytesmsg= msg.toString().getBytes("UTF-8");
+        
+        
+		cipher = Cipher.getInstance("RSA");
+		cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+		byte [] encryptedmsg=blockCipher(bytesmsg,Cipher.ENCRYPT_MODE, cipher);
+		
+		char[] encryptedTranspherable = Hex.encodeHex(encryptedmsg);
+		String strmsgencrypted=new String(encryptedTranspherable);
+		
+		
+		byte[] bts = Hex.decodeHex(strmsgencrypted.toCharArray());
+		
+		Cipher cipher2 = Cipher.getInstance("RSA");
+		
+		cipher2.init(Cipher.DECRYPT_MODE, privKey);
+		byte [] decryptedmsg=blockCipher(encryptedmsg,Cipher.DECRYPT_MODE, cipher2);	
+		
+		System.out.println(new JSONObject(new String(decryptedmsg,"UTF-8")).toString());
+		
+        
+        
 
+
+        
+        
 	}
 
 }

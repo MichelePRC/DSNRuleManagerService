@@ -31,5 +31,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Michele/Desktop/Università/Corsi II ANNO/8. Laboratorio 2/Progetto Asta/AstaTosta/AstaTosta/Server/src/mail.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

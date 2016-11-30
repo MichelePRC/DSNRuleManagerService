@@ -327,13 +327,33 @@ App.controller('LoginController',['$scope','$window','LoginService',function($sc
 							console.error('Error while upload request two.');
 						});*/
 		 	
-		 	/*self.getRMS();
-		 	//$.jStorage.set("ciao", "ciaoooo");
-		 	//$.jStorage.setTTL("ciao", 60000);
-		 	console.log($.jStorage.get("ciao"));
+		 /*self.getRMS();
+		 //$.jStorage.set("ciao", "ciaoooo");
+		 //$.jStorage.setTTL("ciao", 60000);
+		 console.log($.jStorage.get("ciao"));
 
-		 	console.log($.jStorage.index());*/
-	
+		 console.log($.jStorage.index());*/
+		 
+		 /*var bcrypt = dcodeIO.bcrypt;
+		 var salt = bcrypt.genSaltSync(10);
+		 var hash = bcrypt.hashSync("prova", salt);
+		 
+		 console.log(salt);
+		 console.log(hash);
+		 if (bcrypt.compareSync("prova", hash))
+			 console.log("ok");*/
+
+		 
+		 /*window.cbfunc = function(body) { 	 
+			 var str=(body.results[0]); 
+			 str=str.substring(6, (str.length-7))
+			 console.log(str);
+			 };
+		 $.getScript('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22' + 
+		 encodeURIComponent("https://dl.dropboxusercontent.com/1/view/dfib1ukvbejo4nr/Applicazioni/UploadDownloadResource/17.txt") + '%22&format=xml&diagnostics=true&callback=cbfunc');*/
+
+		 
+		 	
 	
         
 }}]);

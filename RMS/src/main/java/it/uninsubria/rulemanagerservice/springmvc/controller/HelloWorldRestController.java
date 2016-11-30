@@ -1,6 +1,8 @@
 package it.uninsubria.rulemanagerservice.springmvc.controller;
 
 import java.util.Base64;
+
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 
 
@@ -534,8 +536,8 @@ public class HelloWorldRestController  {
 	   	String doppiacifratura=jsonmsg2.toString();    	
         
 
-	   	String iv2=new AesUtil(128,1000).random(128/8).toString();
-	   	String salt2=new AesUtil(128,1000).random(128/8).toString();
+	   	String iv2=random(16);
+	   	String salt2=random(16);
 	   	String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
 	   	String passphrase2=RandomStringUtils.random(16, characters);
         
@@ -589,168 +591,168 @@ public class HelloWorldRestController  {
     
     @RequestMapping(value = "/uploadReq1/", method = RequestMethod.POST)
     public void uploadReq1 (HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, JSONException{
-    	
-    	
-    	
+
+
+
     	StringBuilder sb = new StringBuilder();
-        BufferedReader br = request.getReader();
-        String str = null;
-        while ((str = br.readLine()) != null) {
-            sb.append(str);
-        }
-        JSONObject messaggioInChiaro = new JSONObject(sb.toString());
-        
-        String paramRMS=messaggioInChiaro.getString("paramRMS");			//ACCEDO ALLA KEYSIMM CIFRATA TRAMITE CHIAVE PUBBLICA DI RMS
-        
-        RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
+    	BufferedReader br = request.getReader();
+    	String str = null;
+    	while ((str = br.readLine()) != null) {
+    		sb.append(str);
+    	}
+    	JSONObject messaggioInChiaro = new JSONObject(sb.toString());
+
+    	String paramRMS=messaggioInChiaro.getString("paramRMS");			//ACCEDO ALLA KEYSIMM CIFRATA TRAMITE CHIAVE PUBBLICA DI RMS
+
+    	RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);
     	KeyFactory factory = KeyFactory.getInstance("RSA");
     	PrivateKey priv = factory.generatePrivate(spec);
 
     	Cipher cipher;
-        
-        byte[] dectyptedText = new byte[1];
-        try {
-          cipher = javax.crypto.Cipher.getInstance("RSA");
-          
-          byte[] messaggioCifratoBytes = new byte[256];
 
-          BigInteger messaggioCifrato = new BigInteger(paramRMS.toString(), 16);
-          if (messaggioCifrato.toByteArray().length > 256) {
-              for (int i=1; i<257; i++) {
-            	  messaggioCifratoBytes[i-1] = messaggioCifrato.toByteArray()[i];
-              }
-          } else {
-        	  messaggioCifratoBytes = messaggioCifrato.toByteArray();
-          }
-         
-          cipher.init(Cipher.DECRYPT_MODE, priv);
-          dectyptedText = cipher.doFinal(messaggioCifratoBytes);
-          } catch(NoSuchAlgorithmException e) {
-        	  System.out.println(e);
-          } catch(NoSuchPaddingException e) { 
-        	  System.out.println(e);
-          } catch(InvalidKeyException e) {
-        	  System.out.println(e);
-          } catch(IllegalBlockSizeException e) {
-        	  System.out.println(e);
-          } catch(BadPaddingException e) {
-        	  System.out.println(e);
-          }
-          String messaggioDecifrato = new String(dectyptedText);
-          JSONObject AESSimmKey = new JSONObject(messaggioDecifrato);
-          
-          String salt=AESSimmKey.getString("salt");							//ACCEDO ALLA KEYSIMM in CHIARO
-          String iv=AESSimmKey.getString("iv");
-          String passphrase=AESSimmKey.getString("passPhrase");
-          
-          AesUtil aesUtil=new AesUtil(128, 1000);
-          String strmsgRMS=aesUtil.decrypt(salt, iv, passphrase, messaggioInChiaro.getString("encryptmsgRMS"));		//OTTENGO LA STRINGA DEL MESSAGGIO A RMS
-          
-          JSONObject jsonmsgRMS=new JSONObject(strmsgRMS);							//MSG IN JSON A RMS
-          
-          int n1=jsonmsgRMS.getInt("n1");
-          int idu=jsonmsgRMS.getInt("idu");
-          int idresource=jsonmsgRMS.getInt("idR");
-          String token=jsonmsgRMS.getString("session_token");
-          
-          
-          Resource rsc=new Resource();																
-          User user=userService.findByIdu(idu);
-          PrintWriter pw = null;
-          
-          	
-          rsc.setIdR(idresource);
-          rsc.setOwner(user);
-          resourceService.saveResource(rsc);
-          
-          UploadRequest uprequest=new UploadRequest();								//SALVO LA RICHIESTA DI UPLOAD PER IL NONCE N1 E CONTROLLO SUCCESSIVO NEL CONTROLLER PATH 2 UPLOAD
-          uprequest.setToken(token);
-          uprequest.setNonce(n1);
-          uprequest.setUtente(user);
-          
-          //uploadRequestService.save(uprequest);
-          
-          
-          String msgKMS=jsonmsgRMS.getString("msgKMS");								//PRENDO IL MSG DIRETTO A KMS E LO INVIO A KMS
-          
-          URL url = new URL("http://193.206.170.148/KMS/uploadReq1/");
-  		
-  		  URLConnection urlConnection = url.openConnection();
-  		  urlConnection.setDoOutput(true);
-  		  urlConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-  		  urlConnection.connect();
-  		  OutputStream outputStream = urlConnection.getOutputStream();
-  		  outputStream.write(msgKMS.getBytes());		
-  		  outputStream.flush();
+    	byte[] dectyptedText = new byte[1];
+    	try {
+    		cipher = javax.crypto.Cipher.getInstance("RSA");
 
-  		  BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+    		byte[] messaggioCifratoBytes = new byte[256];
+
+    		BigInteger messaggioCifrato = new BigInteger(paramRMS.toString(), 16);
+    		if (messaggioCifrato.toByteArray().length > 256) {
+    			for (int i=1; i<257; i++) {
+    				messaggioCifratoBytes[i-1] = messaggioCifrato.toByteArray()[i];
+    			}
+    		} else {
+    			messaggioCifratoBytes = messaggioCifrato.toByteArray();
+    		}
+
+    		cipher.init(Cipher.DECRYPT_MODE, priv);
+    		dectyptedText = cipher.doFinal(messaggioCifratoBytes);
+    	} catch(NoSuchAlgorithmException e) {
+    		System.out.println(e);
+    	} catch(NoSuchPaddingException e) { 
+    		System.out.println(e);
+    	} catch(InvalidKeyException e) {
+    		System.out.println(e);
+    	} catch(IllegalBlockSizeException e) {
+    		System.out.println(e);
+    	} catch(BadPaddingException e) {
+    		System.out.println(e);
+    	}
+    	String messaggioDecifrato = new String(dectyptedText);
+    	JSONObject AESSimmKey = new JSONObject(messaggioDecifrato);
+
+    	String salt=AESSimmKey.getString("salt");							//ACCEDO ALLA KEYSIMM in CHIARO
+    	String iv=AESSimmKey.getString("iv");
+    	String passphrase=AESSimmKey.getString("passPhrase");
+
+    	AesUtil aesUtil=new AesUtil(128, 1000);
+    	String strmsgRMS=aesUtil.decrypt(salt, iv, passphrase, messaggioInChiaro.getString("encryptmsgRMS"));		//OTTENGO LA STRINGA DEL MESSAGGIO A RMS
+
+    	JSONObject jsonmsgRMS=new JSONObject(strmsgRMS);							//MSG IN JSON A RMS
+
+    	int n1=jsonmsgRMS.getInt("n1");
+    	int idu=jsonmsgRMS.getInt("idu");
+    	int idresource=jsonmsgRMS.getInt("idR");
+    	String token=jsonmsgRMS.getString("session_token");
 
 
-  	      StringBuffer responseFromKMS = new StringBuffer(); 
-  	      String line;
-  	      while((line = reader.readLine()) != null) {
-  	    	responseFromKMS.append(line);
-  	    	responseFromKMS.append('\r');
-  	      }
-          
-  	      JSONObject msgToClient=new JSONObject();								//RICEVO LA RISPOSTA DA KMS DIRETTA AL CLIENT
-  	      
-          msgToClient.put("secretUser", user.getSecret());
-          msgToClient.put("nonce_one_plus_one", n1+1);
-          msgToClient.put("KMSmsg", responseFromKMS.toString());				//CREO IL MSG DIRETTO AL CLIENT CONTENENTE LA RISPOSTA DI RMS E IL MSG DI KMS
-          
-  	   	  
-  	   	  String iv2=new AesUtil(128,1000).random(128/8).toString();								//CIFRO TUTTO TRAMITE CHIAVE PUBBLICA DEL CLIENT
-  	   	  String salt2=new AesUtil(128,1000).random(128/8).toString();
-  	   	  String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
-  	   	  String passphrase2=RandomStringUtils.random(16, characters);
-  	   	  
-  	   	  JSONObject AESKeyParams=new JSONObject();
-  	   	  AESKeyParams.put("iv", iv2);
-  	   	  AESKeyParams.put("salt", salt2);
-  	   	  AESKeyParams.put("passphrase", passphrase2);
-  	   	  
-  	   	  factory = KeyFactory.getInstance("RSA");
-  	   	  RSAPublicKeySpec spec2 = new RSAPublicKeySpec(new BigInteger(userService.findByIdu(idu).getModulus()), new BigInteger(userService.findByIdu(idu).getExponent()));    	
-    	  PublicKey clientPub = factory.generatePublic(spec2);
-  	   	  
-  	   	  
-  	   	  Cipher cipher2;
-  	   	  byte[] encryptedText = new byte[1];
-  	   	  try {
-  	   		  cipher2 = javax.crypto.Cipher.getInstance("RSA");
-  	   		  byte[] messaggioDaCifrare =AESKeyParams.toString().getBytes();
-  	   		  cipher2.init(Cipher.ENCRYPT_MODE, clientPub);
-  	   		  encryptedText = cipher2.doFinal(messaggioDaCifrare);
-  	   		  //encryptedText = HelloWorldRestController.blockCipher(messaggioDaCifrare,Cipher.ENCRYPT_MODE, cipher2);
-  	   	  } catch(NoSuchAlgorithmException e) {
-          } catch(NoSuchPaddingException e) { 
-          } catch(InvalidKeyException e) {
-          } catch(IllegalBlockSizeException e) {
-          } catch(BadPaddingException e) {
-          }
-          String AESParams = byteArrayToHexString(encryptedText);
-          
-          AesUtil aesUtil2=new AesUtil(128, 1000);
-          String encrypted_msg_client=aesUtil2.encrypt(salt2, iv2, passphrase2, msgToClient.toString());
-          
-          JSONObject final_msg=new JSONObject();
-          final_msg.put("encrypted_msg_client", encrypted_msg_client);
-          final_msg.put("AESParams", AESParams);        
-          
-          
-          try{
-            pw = response.getWriter();    	 	
-          	pw.println(final_msg);
-          }catch(Exception ex)
-            {
-            pw.println("{");
-            pw.println("\"successful\": false,");
-            pw.println("\"message\": \""+ex.getMessage()+"\",");
-            pw.println("}");
-           return;
-           }               	
-    	
+    	Resource rsc=new Resource();																
+    	User user=userService.findByIdu(idu);
+    	PrintWriter pw = null;
+
+
+    	rsc.setIdR(idresource);
+    	rsc.setOwner(user);
+    	resourceService.saveResource(rsc);
+
+    	UploadRequest uprequest=new UploadRequest();								//SALVO LA RICHIESTA DI UPLOAD PER IL NONCE N1 E CONTROLLO SUCCESSIVO NEL CONTROLLER PATH 2 UPLOAD
+    	uprequest.setToken(token);
+    	uprequest.setNonce(n1);
+    	uprequest.setUtente(user);
+
+    	//uploadRequestService.save(uprequest);
+
+
+    	String msgKMS=jsonmsgRMS.getString("msgKMS");								//PRENDO IL MSG DIRETTO A KMS E LO INVIO A KMS
+
+    	URL url = new URL("http://193.206.170.148/KMS/uploadReq1/");
+
+    	URLConnection urlConnection = url.openConnection();
+    	urlConnection.setDoOutput(true);
+    	urlConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+    	urlConnection.connect();
+    	OutputStream outputStream = urlConnection.getOutputStream();
+    	outputStream.write(msgKMS.getBytes());		
+    	outputStream.flush();
+
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+
+    	StringBuffer responseFromKMS = new StringBuffer(); 
+    	String line;
+    	while((line = reader.readLine()) != null) {
+    		responseFromKMS.append(line);
+    		responseFromKMS.append('\r');
+    	}
+
+    	JSONObject msgToClient=new JSONObject();								//RICEVO LA RISPOSTA DA KMS DIRETTA AL CLIENT
+
+    	msgToClient.put("secretUser", user.getSecret());
+    	msgToClient.put("nonce_one_plus_one", n1+1);
+    	msgToClient.put("KMSmsg", responseFromKMS.toString());				//CREO IL MSG DIRETTO AL CLIENT CONTENENTE LA RISPOSTA DI RMS E IL MSG DI KMS
+
+
+    	String iv2=random(16);							//CIFRO TUTTO TRAMITE CHIAVE PUBBLICA DEL CLIENT
+    	String salt2=random(16);
+    	String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
+    	String passphrase2=RandomStringUtils.random(16, characters);
+
+    	JSONObject AESKeyParams=new JSONObject();
+    	AESKeyParams.put("iv", iv2);
+    	AESKeyParams.put("salt", salt2);
+    	AESKeyParams.put("passphrase", passphrase2);
+
+    	factory = KeyFactory.getInstance("RSA");
+    	RSAPublicKeySpec spec2 = new RSAPublicKeySpec(new BigInteger(userService.findByIdu(idu).getModulus()), new BigInteger(userService.findByIdu(idu).getExponent()));    	
+    	PublicKey clientPub = factory.generatePublic(spec2);
+
+
+    	Cipher cipher2;
+    	byte[] encryptedText = new byte[1];
+    	try {
+    		cipher2 = javax.crypto.Cipher.getInstance("RSA");
+    		byte[] messaggioDaCifrare =AESKeyParams.toString().getBytes();
+    		cipher2.init(Cipher.ENCRYPT_MODE, clientPub);
+    		encryptedText = cipher2.doFinal(messaggioDaCifrare);
+    		//encryptedText = HelloWorldRestController.blockCipher(messaggioDaCifrare,Cipher.ENCRYPT_MODE, cipher2);
+    	} catch(NoSuchAlgorithmException e) {
+    	} catch(NoSuchPaddingException e) { 
+    	} catch(InvalidKeyException e) {
+    	} catch(IllegalBlockSizeException e) {
+    	} catch(BadPaddingException e) {
+    	}
+    	String AESParams = byteArrayToHexString(encryptedText);
+
+    	AesUtil aesUtil2=new AesUtil(128, 1000);
+    	String encrypted_msg_client=aesUtil2.encrypt(salt2, iv2, passphrase2, msgToClient.toString());
+
+    	JSONObject final_msg=new JSONObject();
+    	final_msg.put("encrypted_msg_client", encrypted_msg_client);
+    	final_msg.put("AESParams", AESParams);        
+
+
+    	try{
+    		pw = response.getWriter();    	 	
+    		pw.println(final_msg);
+    	}catch(Exception ex)
+    	{
+    		pw.println("{");
+    		pw.println("\"successful\": false,");
+    		pw.println("\"message\": \""+ex.getMessage()+"\",");
+    		pw.println("}");
+    		return;
+    	}               	
+
     }
     
     
@@ -809,7 +811,7 @@ public class HelloWorldRestController  {
           String iv=AESSimmKey.getString("iv");
           String passphrase=AESSimmKey.getString("passPhrase");
           
-          File dir = new File("/usr/share/tomcat7/apache-tomcat-7.0.69/webapps");
+          /*File dir = new File("/usr/share/tomcat7/apache-tomcat-7.0.69/webapps");
   	   	  dir.mkdirs();
   	   	  File tmp = new File(dir, "debug.txt");
   	   	  tmp.createNewFile();
@@ -825,7 +827,7 @@ public class HelloWorldRestController  {
   	   	  System.out.println(messaggioInChiaro.getString("msgRMS"));
   	   	  System.out.println(salt);
   	   	  System.out.println(iv);
-  	   	  System.out.println(passphrase);
+  	   	  System.out.println(passphrase);*/
   	   	  
           AesUtil aesUtil=new AesUtil(128, 1000);
           String strmsgRMS=aesUtil.decrypt(salt, iv, passphrase, messaggioInChiaro.getString("msgRMS"));			//OTTENGO LA STRINGA DEL MESSAGGIO A RMS
@@ -835,8 +837,7 @@ public class HelloWorldRestController  {
           
           /* PARTE DI CODICE IN CUI FACCIO IL CONTROLLO DEL NONCE N1: N1+2 CERCANDO LA RIGA NELLA TABELLA UPLOADREQUEST
           jsonmsgRMS.get(key)*/
-          
-          
+                   
           
           int nonce_one_plus_2=jsonmsgRMS.getInt("N1_2");
           
@@ -884,8 +885,6 @@ public class HelloWorldRestController  {
     
     @RequestMapping(value = "/downloadReq/", method = RequestMethod.POST)
     public void downloadReq(HttpServletRequest request, HttpServletResponse response ) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, JSONException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-	
-
 		
 		StringBuilder sb = new StringBuilder();
         BufferedReader br = request.getReader();
@@ -894,7 +893,7 @@ public class HelloWorldRestController  {
             sb.append(str);
         }	
 		
-		/*RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);			//MSG CIFRATO	
+		RSAPrivateKeySpec spec = new RSAPrivateKeySpec(modulus, privateExponent);			
     	KeyFactory factory = KeyFactory.getInstance("RSA");
     	PrivateKey priv = factory.generatePrivate(spec);
         
@@ -927,9 +926,8 @@ public class HelloWorldRestController  {
            } catch(BadPaddingException e) {
          	  System.out.println(e);
            }
-           String messaggioDecifrato = new String(dectyptedText);*/
-           //JSONObject jsonmsg = new JSONObject(messaggioDecifrato);
-           JSONObject jsonmsg = new JSONObject(sb.toString());
+           String messaggioDecifrato = new String(dectyptedText);
+           JSONObject jsonmsg = new JSONObject(messaggioDecifrato);
 
            int idRequestor=jsonmsg.getInt("idRequestor");
            int idResource=jsonmsg.getInt("idResource");
@@ -946,7 +944,7 @@ public class HelloWorldRestController  {
            jsonmsgKMS.put("idResource", idResource);
            
            
-           /*RSAPublicKeySpec KMSspec = new RSAPublicKeySpec(KMSmodulus, KMSpublicExponent);
+           RSAPublicKeySpec KMSspec = new RSAPublicKeySpec(KMSmodulus, KMSpublicExponent);
        	   KeyFactory KMSfactory = KeyFactory.getInstance("RSA");
        	   PublicKey KMSpub = KMSfactory.generatePublic(KMSspec);
        	      	
@@ -965,30 +963,28 @@ public class HelloWorldRestController  {
              } catch(BadPaddingException e) {
              }
            
-           String encryptedmsgKMS = new String(Base64.getEncoder().encode(encryptedText));*/			//MSG DESTINATO A KMS CIFRATO TRAMITE CHIAVE PUBBLICA KMS
+           String encryptedmsgKMS = new String(Base64.getEncoder().encode(encryptedText));			//MSG DESTINATO A KMS CIFRATO TRAMITE CHIAVE PUBBLICA KMS
            
            JSONObject jsonmsgPFS=new JSONObject();
-           /*jsonmsgPFS.put("idRequestor", idRequestor);
-           jsonmsgPFS.put("idOwner", idOwner);
-           jsonmsgPFS.put("ruleRsc", ruleRsc);*/
            
            jsonmsgPFS.put("idRequestor", idRequestor);
            jsonmsgPFS.put("idOwner", idOwner);
            jsonmsgPFS.put("ruleRsc", ruleRsc);
            
-           //jsonmsgPFS.put("msgtoKMS", encryptedmsgKMS);  
-           //jsonmsgPFS.put("msgtoKMS", jsonmsgKMS.toString()); 
-           jsonmsgPFS.put("idResource", idResource);
+           jsonmsgPFS.put("msgtoKMS", encryptedmsgKMS);  
            
-           /*RSAPublicKeySpec PFSspec = new RSAPublicKeySpec(PFSmodulus, PFSpublicExponent);
+           RSAPublicKeySpec PFSspec = new RSAPublicKeySpec(PFSmodulus, PFSpublicExponent);
        	   KeyFactory PFSfactory = KeyFactory.getInstance("RSA");
        	   PublicKey PFSpub = PFSfactory.generatePublic(PFSspec);
            
            byte [] plaintext=jsonmsgPFS.toString().getBytes();
   		   Cipher cipher3 = Cipher.getInstance("RSA");
   		   cipher3.init(Cipher.ENCRYPT_MODE, PFSpub);
-  		   byte [] encryptedmsgPFS=blockCipher(plaintext,Cipher.ENCRYPT_MODE, cipher3);*/			//MSG (CONTENENTE MSG DIRETTO A KMS) DESTINATO A PFS, CIFRATO TRAMITE CHIAVE PUBBLICA PFS 
+  		   byte [] encryptedmsgPFS=blockCipher(plaintext,Cipher.ENCRYPT_MODE, cipher3);			//MSG (CONTENENTE MSG DIRETTO A KMS) DESTINATO A PFS, CIFRATO TRAMITE CHIAVE PUBBLICA PFS 
            
+  		   char[] encryptedTranspherable = Hex.encodeHex(encryptedmsgPFS);
+  		   String strmsgencrypted=new String(encryptedTranspherable);
+  		   
            
   		   URL url = new URL("http://193.206.170.147/PathFinder/evaluationRequest/");						//INVIA IL MSG A PFS CON RICHIESTA DI EVALUATION
    		
@@ -997,7 +993,7 @@ public class HelloWorldRestController  {
   		   urlConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
   		   urlConnection.connect();
   		   OutputStream outputStream = urlConnection.getOutputStream();
-  		   outputStream.write(jsonmsgPFS.toString().getBytes());		
+  		   outputStream.write(strmsgencrypted.getBytes());		
   		   outputStream.flush();
            
            
@@ -1013,7 +1009,6 @@ public class HelloWorldRestController  {
  	    	 responseFromKMS.append('\r');
  	       }
            
- 	       //String msgFromKMS=responseFromKMS.toString(); 	PER MSG CIFRATO
  	       
            String secret_owner=owner.getSecret();
            int nonce_one_plus_one=nonce_one + 1;
@@ -1021,12 +1016,11 @@ public class HelloWorldRestController  {
            JSONObject msgtoClient=new JSONObject();
            msgtoClient.put("secret_owner", secret_owner);
            msgtoClient.put("N1_1", nonce_one_plus_one);
-           //msgtoClient.put("msgFromKMS", msgFromKMS);
            msgtoClient.put("msgFromKMS", responseFromKMS.toString());
            
            
-          /*String iv=new AesUtil(128,1000).random(128/8).toString();								//CIFRO TUTTO TRAMITE CHIAVE PUBBLICA DEL CLIENT (REQUESTOR)
-   	   	  String salt=new AesUtil(128,1000).random(128/8).toString();
+          String iv=random(16);							//CIFRO TUTTO TRAMITE CHIAVE PUBBLICA DEL CLIENT (REQUESTOR)
+   	   	  String salt=random(16);
    	   	  String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; 
    	   	  String passphrase=RandomStringUtils.random(16, characters);
    	   	  
@@ -1034,8 +1028,7 @@ public class HelloWorldRestController  {
    	   	  AESKeyParams.put("iv", iv);
    	   	  AESKeyParams.put("salt", salt);
    	   	  AESKeyParams.put("passphrase", passphrase);
-   	   	  
-   	   	  
+   	   	    	   	  
    	   	  User requestor=userService.findByIdu(idRequestor);
    	   	  
    	   	  factory = KeyFactory.getInstance("RSA");
@@ -1061,14 +1054,14 @@ public class HelloWorldRestController  {
            
            JSONObject final_msg=new JSONObject();
            final_msg.put("encrypted_msg_client", encrypted_msg_client);
-           final_msg.put("AESParams", AESParams);  */      
+           final_msg.put("AESParams", AESParams);      
            
            PrintWriter pw=null;
            
            try{
              pw = response.getWriter();    	 	
-           	 //pw.println(final_msg);
-           	 pw.println(msgtoClient);
+           	 pw.println(final_msg);
+           	 //pw.println(msgtoClient);
            	
            }catch(Exception ex)
              {
@@ -1096,7 +1089,8 @@ public class HelloWorldRestController  {
     
     
     
-    private static byte[] blockCipher(byte[] bytes, int mode, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException{
+private static byte[] blockCipher(byte[] bytes, int mode, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException{
+		
 		// string initialize 2 buffers.
 		// scrambled will hold intermediate results
 		byte[] scrambled = new byte[0];
@@ -1104,7 +1098,7 @@ public class HelloWorldRestController  {
 		// toReturn will hold the total result
 		byte[] toReturn = new byte[0];
 		// if we encrypt we use 100 byte long blocks. Decryption requires 128 byte long blocks (because of RSA)
-		int length = (1024 / 8 ) - 11 ;
+		int length = (mode == Cipher.ENCRYPT_MODE)? 100 : 256;
 
 		// another buffer. this one will hold the bytes that have to be modified in this step
 		byte[] buffer = new byte[length];
@@ -1151,9 +1145,7 @@ public class HelloWorldRestController  {
 		}
 		return toReturn;
 	}
-     
-    
-    
+       
     
 	public static String byteArrayToHexString(byte[] bytes)          
     {         
@@ -1167,25 +1159,12 @@ public class HelloWorldRestController  {
         return buffer.toString();
     }   
 	
-	
-	private ByteArrayOutputStream loadTxt(String pathTxt) throws FileNotFoundException
-	{
-		File file = new File(pathTxt);
-		FileInputStream fis = new FileInputStream(file);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-		byte[] buf = new byte[1024];
-			try {
-				for (int readNum; (readNum = fis.read(buf)) != -1;) {
-					bos.write(buf, 0, readNum); //no doubt here is 0
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-	return bos;
-	}
     
-    
+	public static String random(int length) {
+        byte[] salt = new byte[length];
+        new SecureRandom().nextBytes(salt);
+        return Hex.encodeHexString(salt);
+    }
     
 	
 }
